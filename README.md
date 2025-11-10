@@ -158,13 +158,13 @@ Le cœur du projet. Le script n’affiche et ne traite que les apps référencé
 ### Catégories utilisées
 `Navigateur`, `Bureautique`, `Communication`, `Multimédia`, `Outils`, `Sécurité`, `Création`, `Dev`, `Jeux`, `Cloud & Sync`  
 
-### Trouver un ID winget
+### Trouver un ID winget pour ajouter le logiciel
 
 Sur une machine Windows avec winget :
 ```powershell
 winget search "NomDuLogiciel"
 ```
-Repère la colonne Id et utilise‑la dans `apps.json`.
+Repère la colonne Id et ajoute le dans `apps.json` en dupliquant une ligne
 
 ---
 
