@@ -74,12 +74,9 @@ SetupNest/
 └─ README.md
 ```
 
-### `start-SetupNest.cmd` (optionnel mais recommandé)
+### `start-SetupNest.cmd`
 Permet un lancement double‑clic (utile chez des proches) :
-```bat
-@echo off
-powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -File "%~dp0install-gui.ps1"
-```
+
 
 ---
 
