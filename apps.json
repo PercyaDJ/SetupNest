@@ -12,6 +12,12 @@
     "default": false
   },
   {
+    "name": "LibreWolf",
+    "id": "LibreWolf.LibreWolf",
+    "category": "Navigateur",
+    "default": false
+  },
+  {
     "name": "Brave",
     "id": "Brave.Brave",
     "category": "Navigateur",
@@ -62,10 +68,22 @@
   },
 
   {
+    "name": "Mozilla Thunderbird",
+    "id": "Mozilla.Thunderbird",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Proton Mail",
+    "id": "Proton.ProtonMail",
+    "category": "Communication",
+    "default": false
+  },
+  {
     "name": "Discord",
     "id": "Discord.Discord",
     "category": "Communication",
-    "default": true
+    "default": false
   },
   {
     "name": "Microsoft Teams",
@@ -86,26 +104,14 @@
     "default": false
   },
   {
-    "name": "WhatsApp Desktop",
-    "id": "WhatsApp.WhatsApp",
-    "category": "Communication",
-    "default": false
-  },
-  {
     "name": "Signal Desktop",
-    "id": "Signal.Signal",
+    "id": "OpenWhisperSystems.Signal",
     "category": "Communication",
     "default": false
   },
   {
     "name": "Zoom",
     "id": "Zoom.Zoom",
-    "category": "Communication",
-    "default": false
-  },
-  {
-    "name": "Skype",
-    "id": "Microsoft.Skype",
     "category": "Communication",
     "default": false
   },
@@ -124,13 +130,7 @@
   },
   {
     "name": "Kodi",
-    "id": "Kodi.Kodi",
-    "category": "Multimédia",
-    "default": false
-  },
-  {
-    "name": "MusicBee",
-    "id": "MusicBee.MusicBee",
+    "id": "XBMCFoundation.Kodi",
     "category": "Multimédia",
     "default": false
   },
@@ -156,6 +156,12 @@
   {
     "name": "WinRAR",
     "id": "RARLab.WinRAR",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Obsidian",
+    "id": "Obsidian.Obsidian",
     "category": "Outils",
     "default": false
   },
@@ -191,10 +197,17 @@
   },
   {
     "name": "Sysinternals Suite",
-    "id": "Microsoft.Sysinternals.SysinternalsSuite",
+    "id": "Microsoft.Sysinternals.Suite",
     "category": "Outils",
     "default": false
   },
+  {
+    "name": "Logitech G HUB",
+    "id": "Logitech.GHUB",
+    "category": "Outils",
+    "default": false
+  },
+  
 
   {
     "name": "Malwarebytes",
@@ -222,7 +235,7 @@
   },
   {
     "name": "ProtonVPN",
-    "id": "ProtonVPN.ProtonVPN",
+    "id": "Proton.ProtonVPN",
     "category": "Sécurité",
     "default": false
   },
@@ -232,10 +245,22 @@
     "category": "Sécurité",
     "default": false
   },
+  {
+    "name": "Tailscale",
+    "id": "Tailscale.Tailscale",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "OpenVPN",
+    "id": "OpenVPNTechnologies.OpenVPN",
+    "category": "Sécurité",
+    "default": false
+  },
 
   {
     "name": "GIMP",
-    "id": "GIMP.GIMP",
+    "id": "GIMP.GIMP.3",
     "category": "Création",
     "default": false
   },
@@ -246,8 +271,14 @@
     "default": false
   },
   {
+    "name": "Kdenlive",
+    "id": "KDE.Kdenlive",
+    "category": "Création",
+    "default": false
+  },
+  {
     "name": "Krita",
-    "id": "Krita.Krita",
+    "id": "KDE.Krita",
     "category": "Création",
     "default": false
   },
@@ -260,12 +291,6 @@
   {
     "name": "Shotcut",
     "id": "Meltytech.Shotcut",
-    "category": "Création",
-    "default": false
-  },
-  {
-    "name": "DaVinci Resolve",
-    "id": "BlackmagicDesign.DaVinciResolve",
     "category": "Création",
     "default": false
   },
@@ -295,8 +320,8 @@
     "default": false
   },
   {
-    "name": "Python 3",
-    "id": "Python.Python.3",
+    "name": "Python 3.14",
+    "id": "Python.Python.3.14",
     "category": "Dev",
     "default": false
   },
@@ -380,10 +405,5 @@
     "category": "Cloud & Sync",
     "default": false
   },
-  {
-    "name": "Resilio Sync",
-    "id": "Resilio.Sync",
-    "category": "Cloud & Sync",
-    "default": false
-  }
+  
 ]
