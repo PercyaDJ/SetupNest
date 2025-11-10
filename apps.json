@@ -12,16 +12,152 @@
     "default": false
   },
   {
+    "name": "Brave",
+    "id": "Brave.Brave",
+    "category": "Navigateur",
+    "default": false
+  },
+  {
+    "name": "Opera",
+    "id": "Opera.Opera",
+    "category": "Navigateur",
+    "default": false
+  },
+  {
+    "name": "Vivaldi",
+    "id": "VivaldiTechnologies.Vivaldi",
+    "category": "Navigateur",
+    "default": false
+  },
+
+  {
+    "name": "LibreOffice",
+    "id": "TheDocumentFoundation.LibreOffice",
+    "category": "Bureautique",
+    "default": true
+  },
+  {
+    "name": "ONLYOFFICE Desktop Editors",
+    "id": "ONLYOFFICE.DesktopEditors",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "WPS Office",
+    "id": "Kingsoft.WPSOffice",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Adobe Acrobat Reader",
+    "id": "Adobe.Acrobat.Reader.64-bit",
+    "category": "Bureautique",
+    "default": true
+  },
+  {
+    "name": "SumatraPDF",
+    "id": "SumatraPDF.SumatraPDF",
+    "category": "Bureautique",
+    "default": false
+  },
+
+  {
+    "name": "Discord",
+    "id": "Discord.Discord",
+    "category": "Communication",
+    "default": true
+  },
+  {
+    "name": "Microsoft Teams",
+    "id": "Microsoft.Teams",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Slack",
+    "id": "SlackTechnologies.Slack",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Telegram Desktop",
+    "id": "Telegram.TelegramDesktop",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "WhatsApp Desktop",
+    "id": "WhatsApp.WhatsApp",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Signal Desktop",
+    "id": "Signal.Signal",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Zoom",
+    "id": "Zoom.Zoom",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Skype",
+    "id": "Microsoft.Skype",
+    "category": "Communication",
+    "default": false
+  },
+
+  {
     "name": "VLC media player",
     "id": "VideoLAN.VLC",
     "category": "Multimédia",
     "default": true
   },
   {
+    "name": "Spotify",
+    "id": "Spotify.Spotify",
+    "category": "Multimédia",
+    "default": false
+  },
+  {
+    "name": "Kodi",
+    "id": "Kodi.Kodi",
+    "category": "Multimédia",
+    "default": false
+  },
+  {
+    "name": "MusicBee",
+    "id": "MusicBee.MusicBee",
+    "category": "Multimédia",
+    "default": false
+  },
+  {
+    "name": "Audacity",
+    "id": "Audacity.Audacity",
+    "category": "Multimédia",
+    "default": false
+  },
+  {
+    "name": "OBS Studio",
+    "id": "OBSProject.OBSStudio",
+    "category": "Multimédia",
+    "default": false
+  },
+
+  {
     "name": "7-Zip",
     "id": "7zip.7zip",
     "category": "Outils",
     "default": true
+  },
+  {
+    "name": "WinRAR",
+    "id": "RARLab.WinRAR",
+    "category": "Outils",
+    "default": false
   },
   {
     "name": "Notepad++",
@@ -30,21 +166,224 @@
     "default": true
   },
   {
-    "name": "Spotify",
-    "id": "Spotify.Spotify",
-    "category": "Divers",
+    "name": "Everything",
+    "id": "voidtools.Everything",
+    "category": "Outils",
     "default": false
   },
   {
-    "name": "Discord",
-    "id": "Discord.Discord",
-    "category": "Communication",
+    "name": "WinDirStat",
+    "id": "WinDirStat.WinDirStat",
+    "category": "Outils",
     "default": false
   },
+  {
+    "name": "CPU-Z",
+    "id": "CPUID.CPU-Z",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "CCleaner",
+    "id": "Piriform.CCleaner",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Sysinternals Suite",
+    "id": "Microsoft.Sysinternals.SysinternalsSuite",
+    "category": "Outils",
+    "default": false
+  },
+
+  {
+    "name": "Malwarebytes",
+    "id": "Malwarebytes.Malwarebytes",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Bitwarden",
+    "id": "Bitwarden.Bitwarden",
+    "category": "Sécurité",
+    "default": true
+  },
+  {
+    "name": "KeePass",
+    "id": "DominikReichl.KeePass",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "KeePassXC",
+    "id": "KeePassXCTeam.KeePassXC",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "ProtonVPN",
+    "id": "ProtonVPN.ProtonVPN",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "WireGuard",
+    "id": "WireGuard.WireGuard",
+    "category": "Sécurité",
+    "default": false
+  },
+
+  {
+    "name": "GIMP",
+    "id": "GIMP.GIMP",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Inkscape",
+    "id": "Inkscape.Inkscape",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Krita",
+    "id": "Krita.Krita",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Blender",
+    "id": "BlenderFoundation.Blender",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Shotcut",
+    "id": "Meltytech.Shotcut",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "DaVinci Resolve",
+    "id": "BlackmagicDesign.DaVinciResolve",
+    "category": "Création",
+    "default": false
+  },
+
+  {
+    "name": "Visual Studio Code",
+    "id": "Microsoft.VisualStudioCode",
+    "category": "Dev",
+    "default": true
+  },
+  {
+    "name": "Git",
+    "id": "Git.Git",
+    "category": "Dev",
+    "default": true
+  },
+  {
+    "name": "GitHub Desktop",
+    "id": "GitHub.GitHubDesktop",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Docker Desktop",
+    "id": "Docker.DockerDesktop",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Python 3",
+    "id": "Python.Python.3",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Node.js LTS",
+    "id": "OpenJS.NodeJS.LTS",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "JetBrains Toolbox",
+    "id": "JetBrains.Toolbox",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Postman",
+    "id": "Postman.Postman",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "PowerShell 7",
+    "id": "Microsoft.PowerShell",
+    "category": "Dev",
+    "default": false
+  },
+
   {
     "name": "Steam",
     "id": "Valve.Steam",
     "category": "Jeux",
+    "default": false
+  },
+  {
+    "name": "Epic Games Launcher",
+    "id": "EpicGames.EpicGamesLauncher",
+    "category": "Jeux",
+    "default": false
+  },
+  {
+    "name": "GOG Galaxy",
+    "id": "GOG.Galaxy",
+    "category": "Jeux",
+    "default": false
+  },
+  {
+    "name": "Ubisoft Connect",
+    "id": "Ubisoft.Connect",
+    "category": "Jeux",
+    "default": false
+  },
+  {
+    "name": "Minecraft Launcher",
+    "id": "Mojang.MinecraftLauncher",
+    "category": "Jeux",
+    "default": false
+  },
+
+  {
+    "name": "Dropbox",
+    "id": "Dropbox.Dropbox",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "MEGASync",
+    "id": "Mega.MEGASync",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Nextcloud Desktop",
+    "id": "Nextcloud.NextcloudDesktop",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Syncthing",
+    "id": "Syncthing.Syncthing",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Resilio Sync",
+    "id": "Resilio.Sync",
+    "category": "Cloud & Sync",
     "default": false
   }
 ]
