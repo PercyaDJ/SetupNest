@@ -1,5 +1,5 @@
 
-# 🧰 Ninite perso – Installateur automatique d’applications (winget + GUI)
+# Ninite perso – Installateur automatique d’applications (winget + GUI)
 
 Ce projet est un équivalent “fait maison” de [Ninite](https://ninite.com/), basé sur :
 
@@ -15,7 +15,7 @@ sans avoir à télécharger chaque logiciel à la main.
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 - Interface graphique en Windows Forms avec un **TreeView** :
   - Catégories dépliables : Navigateur, Bureautique, Communication, Multimédia, Outils, Sécurité, Création, Dev, Jeux, Cloud & Sync, etc.
@@ -34,7 +34,7 @@ sans avoir à télécharger chaque logiciel à la main.
 
 ---
 
-## 🧱 Prérequis
+## Prérequis
 
 - Windows 10 ou 11
 - PowerShell (intégré à Windows)
@@ -43,7 +43,7 @@ sans avoir à télécharger chaque logiciel à la main.
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```text
 ninite-perso/
@@ -72,7 +72,7 @@ ninite-perso/
   - `category` : catégorie (Navigateur, Bureautique, Outils, Photo, etc.)
   - `default` : `true` si l’app est cochée par défaut
 
-Exemple (extrait) :
+Extrait :
 
 ```json
 [
@@ -86,7 +86,7 @@ Exemple (extrait) :
     "name": "LibreOffice",
     "id": "TheDocumentFoundation.LibreOffice",
     "category": "Bureautique",
-    "default": true
+    "default": false
   },
   {
     "name": "Discord",
@@ -97,9 +97,9 @@ Exemple (extrait) :
 ]
 ```
 
-### `start-ninite-perso.cmd` (optionnel mais pratique)
+### `start-ninite-perso.cmd`
 
-Pour pouvoir lancer l’outil par simple double-clic (utile pour la famille / les amis), tu peux ajouter un fichier `start-ninite-perso.cmd` :
+Pour pouvoir lancer l’outil par simple double-clic (utile pour les users simple), tu peux ajouter un fichier `start-ninite-perso.cmd` :
 
 ```bat
 @echo off
@@ -109,18 +109,18 @@ powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -File "%~dp0install-gu
 
 ---
 
-## 🚀 Installation & premier lancement
+## Installation & premier lancement
 
 ### 1. Cloner ou télécharger le dépôt
 
 ```powershell
-git clone https://github.com/<ton-user>/<ton-repo>.git
-cd <ton-repo>
+git clone https://github.com/PercyaDJ/ninite-perso.git
+cd ninite-perso
 ```
 
 Ou télécharger le ZIP depuis GitHub et l’extraire.
 
-### 2. (Optionnel) Autoriser l’exécution de scripts PowerShell
+### 2. Autoriser l’exécution de scripts PowerShell
 
 Si ce n’est pas déjà fait :
 
@@ -142,7 +142,7 @@ Depuis le dossier du projet :
 .\install-gui.ps1
 ```
 
-#### b) En double-cliquant (si tu as créé `start-ninite-perso.cmd`)
+#### b) En double-cliquant
 
 - Double-cliquer sur `start-ninite-perso.cmd`.
 
@@ -154,7 +154,7 @@ Dans tous les cas, une fenêtre s’ouvre avec :
 
 ---
 
-## 🕹️ Utilisation de l’outil
+## Utilisation de l’outil
 
 1. **Lancer le script** :
 
@@ -192,7 +192,7 @@ Dans tous les cas, une fenêtre s’ouvre avec :
 
 ---
 
-## 🧩 Ajouter ou modifier des applications
+## Ajouter ou modifier des applications
 
 Tout se passe dans `apps.json`.
 
@@ -261,7 +261,7 @@ Exemple :
 
 ---
 
-## 🛠️ Dépannage
+## Dépannage
 
 - **Message “winget n’est pas disponible”**  
   → Le script affiche un message et peut ouvrir la page *App Installer* dans le Microsoft Store.  
@@ -278,7 +278,7 @@ Exemple :
 
 ---
 
-## 🔮 Pistes d’amélioration possibles
+## Pistes d’amélioration possibles
 
 Idées pour faire évoluer le projet :
 
@@ -295,23 +295,7 @@ Idées pour faire évoluer le projet :
 
 ---
 
-## 📜 Licence
+## Auteur
 
-À adapter selon ton choix (MIT, GPL, etc.).  
-Exemple (MIT) :
-
-```text
-MIT License
-
-Copyright (c) 2025 <Ton Nom>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-...
-```
-
----
-
-## 👤 Auteur
-
-Projet maintenu par **<Ton Nom / Pseudo>**  
+Projet maintenu par **<Percya>**  
 Pensé pour un usage perso / famille / amis afin d’éviter les soirées “install de programmes” à rallonge. 😄
