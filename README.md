@@ -297,5 +297,5 @@ Idées pour faire évoluer le projet :
 
 ## Auteur
 
-Projet maintenu par **<Percya>**  
+Projet maintenu par **Percya**  
 Pensé pour un usage perso / famille / amis afin d’éviter les soirées “install de programmes” à rallonge. 😄
