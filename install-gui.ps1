@@ -199,20 +199,20 @@ foreach ($app in $apps) {
 # Form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "SetupNest - Installateur winget (GUI)"
-$form.Size = New-Object System.Drawing.Size(1040, 650)
+$form.Size = [System.Drawing.Size]::new(1040, 650)
 $form.StartPosition = "CenterScreen"
 
 # Titre
 $label = New-Object System.Windows.Forms.Label
 $label.Text = "Categories -> coche les applis a traiter :"
 $label.AutoSize = $true
-$label.Location = New-Object System.Drawing.Point(10, 10)
+$label.Location = [System.Drawing.Point]::new(10, 10)
 $form.Controls.Add($label)
 
 # TreeView
 $tree = New-Object System.Windows.Forms.TreeView
-$tree.Location = New-Object System.Drawing.Point(10, 40)
-$tree.Size = New-Object System.Drawing.Size(600, 520)
+$tree.Location = [System.Drawing.Point]::new(10, 40)
+$tree.Size = [System.Drawing.Size]::new(600, 520)
 $tree.CheckBoxes = $true
 $tree.HideSelection = $false
 $tree.ShowLines = $true
@@ -222,76 +222,78 @@ $form.Controls.Add($tree)
 
 # Log
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(620, 40)
-$logBox.Size = New-Object System.Drawing.Size(400, 520)
+$logBox.Location = [System.Drawing.Point]::new(620, 40)
+$logBox.Size = [System.Drawing.Size]::new(400, 520)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
 $form.Controls.Add($logBox)
 
-# Boutons
+# Boutons (2 lignes)
 $btnWidth = 190
 $gap = 10
 $leftCol = 10
 $midCol  = 210
 $rightCol = 410
 $lastCol = 610
+
 $y1 = 570
 $y2 = 570
 
 $btnCheckAll = New-Object System.Windows.Forms.Button
 $btnCheckAll.Text = "Tout cocher"
-$btnCheckAll.Location = New-Object System.Drawing.Point($leftCol, $y1)
+$btnCheckAll.Location = [System.Drawing.Point]::new($leftCol, $y1)
 $btnCheckAll.Width = $btnWidth
 $form.Controls.Add($btnCheckAll)
 
 $btnUncheckAll = New-Object System.Windows.Forms.Button
 $btnUncheckAll.Text = "Tout decocher"
-$btnUncheckAll.Location = New-Object System.Drawing.Point($midCol, $y1)
+$btnUncheckAll.Location = [System.Drawing.Point]::new($midCol, $y1)
 $btnUncheckAll.Width = $btnWidth
 $form.Controls.Add($btnUncheckAll)
 
 $btnInstall = New-Object System.Windows.Forms.Button
 $btnInstall.Text = "Installer la selection"
-$btnInstall.Location = New-Object System.Drawing.Point($rightCol, $y1)
+$btnInstall.Location = [System.Drawing.Point]::new($rightCol, $y1)
 $btnInstall.Width = $btnWidth
 $form.Controls.Add($btnInstall)
 
 $btnUpdateSel = New-Object System.Windows.Forms.Button
 $btnUpdateSel.Text = "Mettre a jour la selection"
-$btnUpdateSel.Location = New-Object System.Drawing.Point($lastCol, $y1)
+$btnUpdateSel.Location = [System.Drawing.Point]::new($lastCol, $y1)
 $btnUpdateSel.Width = $btnWidth
 $form.Controls.Add($btnUpdateSel)
 
 $btnUpdateAll = New-Object System.Windows.Forms.Button
 $btnUpdateAll.Text = "Mettre a jour TOUT"
-$btnUpdateAll.Location = New-Object System.Drawing.Point($leftCol, $y2+$gap)
+$btnUpdateAll.Location = [System.Drawing.Point]::new($leftCol, ($y2 + $gap))
 $btnUpdateAll.Width = $btnWidth
 $form.Controls.Add($btnUpdateAll)
 
 $btnUninstallSel = New-Object System.Windows.Forms.Button
 $btnUninstallSel.Text = "Desinstaller la selection"
-$btnUninstallSel.Location = New-Object System.Drawing.Point($midCol, $y2+$gap)
+$btnUninstallSel.Location = [System.Drawing.Point]::new($midCol, ($y2 + $gap))
 $btnUninstallSel.Width = $btnWidth
 $form.Controls.Add($btnUninstallSel)
 
 $btnExportSel = New-Object System.Windows.Forms.Button
 $btnExportSel.Text = "Exporter la selection (JSON)"
-$btnExportSel.Location = New-Object System.Drawing.Point($rightCol, $y2+$gap)
+$btnExportSel.Location = [System.Drawing.Point]::new($rightCol, ($y2 + $gap))
 $btnExportSel.Width = $btnWidth
 $form.Controls.Add($btnExportSel)
 
 $btnImportSel = New-Object System.Windows.Forms.Button
 $btnImportSel.Text = "Importer selection (JSON)"
-$btnImportSel.Location = New-Object System.Drawing.Point($lastCol, $y2+$gap)
+$btnImportSel.Location = [System.Drawing.Point]::new($lastCol, ($y2 + $gap))
 $btnImportSel.Width = $btnWidth
 $form.Controls.Add($btnImportSel)
 
 $btnClose = New-Object System.Windows.Forms.Button
 $btnClose.Text = "Fermer"
-$btnClose.Location = New-Object System.Drawing.Point(920, $y2+$gap)
+$btnClose.Location = [System.Drawing.Point]::new(920, ($y2 + $gap))
 $btnClose.Width = 100
 $form.Controls.Add($btnClose)
+
 
 # ----------------------------
 # Construction de l'arbre
