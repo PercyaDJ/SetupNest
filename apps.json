@@ -146,6 +146,12 @@
     "category": "Multimédia",
     "default": false
   },
+  {
+    "name": "Plex",
+    "id": "Plex.Plex",
+    "category": "Multimédia",
+    "default": false
+  },
 
   {
     "name": "7-Zip",
@@ -170,6 +176,12 @@
     "id": "Notepad++.Notepad++",
     "category": "Outils",
     "default": true
+  },
+  {
+    "name": "Notion",
+    "id": "Notion.Notion",
+    "category": "Outils",
+    "default": false
   },
   {
     "name": "Everything",
@@ -207,6 +219,30 @@
     "category": "Outils",
     "default": false
   },
+  {
+    "name": "Calibre",
+    "id": "calibre.calibre",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "TreeSize",
+    "id": "JAMSoftware.TreeSize",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "PowerToys",
+    "id": "Microsoft.PowerToys",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "VirtualBox",
+    "id": "Oracle.VirtualBox",
+    "category": "Outils",
+    "default": false
+  },
   
 
   {
@@ -234,6 +270,12 @@
     "default": false
   },
   {
+    "name": "NordPass",
+    "id": "NordSecurity.NordPass",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "ProtonVPN",
     "id": "Proton.ProtonVPN",
     "category": "Sécurité",
@@ -257,7 +299,25 @@
     "category": "Sécurité",
     "default": false
   },
+  {
+    "name": "NordVPN",
+    "id": "NordSecurity.NordVPN",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Wireshark",
+    "id": "WiresharkFoundation.Wireshark",
+    "category": "Sécurité",
+    "default": false
+  },
 
+  {
+    "name": "Adobe Creative Cloud",
+    "id": "Adobe.CreativeCloud",
+    "category": "Création",
+    "default": false
+  },
   {
     "name": "GIMP",
     "id": "GIMP.GIMP.3",
