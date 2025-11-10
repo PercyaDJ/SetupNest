@@ -1,21 +1,20 @@
 # install-gui.ps1
-# GUI avec catégories dépliables (TreeView) pour installer des applis via winget
+# GUI avec catégories dépliables (TreeView) pour piloter winget :
+# Installer / Mettre à jour (sélection ou tout) / Désinstaller / Exporter / Importer
 
 [CmdletBinding()]
 param()
 
 $ErrorActionPreference = "Stop"
 
+# ----------------------------
+# Détection / aide pour winget
+# ----------------------------
 function Ensure-Winget {
-    # On s'assure d'avoir Windows.Forms pour les MessageBox
     Add-Type -AssemblyName System.Windows.Forms
 
-    # winget déjà dispo → tout va bien
-    if (Get-Command winget -ErrorAction SilentlyContinue) {
-        return
-    }
+    if (Get-Command winget -ErrorAction SilentlyContinue) { return }
 
-    # winget manquant → on propose d'ouvrir le Microsoft Store
     $msg = @"
 winget n'est pas disponible sur ce système.
 
@@ -34,11 +33,10 @@ Une fois l'installation terminée, ferme ce script puis relance-le.
 
     if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
         try {
-            # Ouvre la page "App Installer" dans le Microsoft Store
             Start-Process "ms-windows-store://pdp/?productid=9NBLGGH4NNS1"
         } catch {
             [System.Windows.Forms.MessageBox]::Show(
-                "Impossible d'ouvrir le Microsoft Store automatiquement.`nTu peux chercher 'App Installer' manuellement dans le Store.",
+                "Impossible d'ouvrir le Microsoft Store automatiquement.`nCherche 'App Installer' dans le Store.",
                 "Erreur ouverture Store",
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Error
@@ -46,9 +44,8 @@ Une fois l'installation terminée, ferme ce script puis relance-le.
         }
     }
 
-    # Dans tous les cas, on stoppe le script proprement
     [System.Windows.Forms.MessageBox]::Show(
-        "Le script va se fermer maintenant.`nInstalle App Installer / winget puis relance-le.",
+        "Le script va se fermer.`nInstalle App Installer / winget puis relance-le.",
         "Arrêt du script",
         [System.Windows.Forms.MessageBoxButtons]::OK,
         [System.Windows.Forms.MessageBoxIcon]::Information
@@ -57,12 +54,15 @@ Une fois l'installation terminée, ferme ce script puis relance-le.
     exit 1
 }
 
+# ----------------------------
+# Chargement de la config JSON
+# ----------------------------
 function Load-AppsConfig {
     $configPath = Join-Path $PSScriptRoot "apps.json"
 
     if (-not (Test-Path $configPath)) {
         [System.Windows.Forms.MessageBox]::Show(
-            "Fichier apps.json introuvable.`n`nAttendu ici : $configPath",
+            "Fichier apps.json introuvable.`nAttendu : $configPath",
             "Erreur – config manquante",
             [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Error
@@ -71,7 +71,7 @@ function Load-AppsConfig {
     }
 
     try {
-        $json = Get-Content $configPath -Raw | ConvertFrom-Json
+        Get-Content $configPath -Raw | ConvertFrom-Json
     } catch {
         [System.Windows.Forms.MessageBox]::Show(
             "Impossible de lire apps.json.`nVérifie que le JSON est valide.",
@@ -81,78 +81,164 @@ function Load-AppsConfig {
         ) | Out-Null
         exit 1
     }
-
-    return $json
 }
 
+# ----------------------------
+# Helpers winget + logging
+# ----------------------------
+function Write-UILog {
+    param(
+        [System.Windows.Forms.TextBox]$LogBox,
+        [string]$Message
+    )
+    $LogBox.AppendText("$Message`r`n")
+    $LogBox.SelectionStart = $LogBox.Text.Length
+    $LogBox.ScrollToCaret()
+    [System.Windows.Forms.Application]::DoEvents()
+}
+
+function Winget-IsInstalled {
+    param([string]$Id)
+    # -q : retourne true si l'id apparait
+    winget list --id $Id --accept-source-agreements | Select-String $Id -Quiet
+}
+
+function Winget-Install {
+    param([string]$Id)
+    winget install --id $Id --silent --accept-package-agreements --accept-source-agreements | Out-Null
+}
+
+function Winget-UpgradeId {
+    param([string]$Id)
+    # upgrade ciblé : certains paquets ne sont upgradables que si installés
+    winget upgrade --id $Id --silent --accept-package-agreements --accept-source-agreements | Out-Null
+}
+
+function Winget-UpgradeAll {
+    winget upgrade --all --silent --accept-package-agreements --accept-source-agreements | Out-Null
+}
+
+function Winget-Uninstall {
+    param([string]$Id)
+    winget uninstall --id $Id --silent --accept-source-agreements | Out-Null
+}
+
+# ----------------------------
+# Actions par application
+# ----------------------------
 function Install-App {
     param(
         [pscustomobject]$App,
         [System.Windows.Forms.TextBox]$LogBox
     )
-
     $name = $App.name
     $id   = $App.id
 
-    $log = {
-        param($msg, $LogBoxInner)
-        $LogBoxInner.AppendText("$msg`r`n")
-        $LogBoxInner.SelectionStart = $LogBoxInner.Text.Length
-        $LogBoxInner.ScrollToCaret()
-        [System.Windows.Forms.Application]::DoEvents()
-    }
+    Write-UILog $LogBox "=== INSTALL: $name ($id) ==="
 
-    & $log "=== $name ($id) ===" $LogBox
-
-    # Vérifie si déjà installé
-    $installed = winget list --id $id --accept-source-agreements | Select-String $id -Quiet
-
-    if ($installed) {
-        & $log "✅ Déjà installé, on saute." $LogBox
-        & $log "" $LogBox
+    if (Winget-IsInstalled -Id $id) {
+        Write-UILog $LogBox "✅ Déjà installé, on saute."
+        Write-UILog $LogBox ""
         return
     }
 
     try {
-        & $log "⏬ Installation en cours..." $LogBox
-        winget install --id $id --silent --accept-package-agreements --accept-source-agreements | Out-Null
-        & $log "✅ Installation terminée." $LogBox
+        Write-UILog $LogBox "⏬ Installation en cours..."
+        Winget-Install -Id $id
+        Write-UILog $LogBox "✅ Installation terminée."
     } catch {
-        & $log "❌ Erreur pendant l'installation : $($_.Exception.Message)" $LogBox
+        Write-UILog $LogBox "❌ Erreur pendant l'installation : $($_.Exception.Message)"
     }
-
-    & $log "" $LogBox
+    Write-UILog $LogBox ""
 }
 
-# ---------- GUI ----------
+function Update-App {
+    param(
+        [pscustomobject]$App,
+        [System.Windows.Forms.TextBox]$LogBox
+    )
+    $name = $App.name
+    $id   = $App.id
 
+    Write-UILog $LogBox "=== UPDATE: $name ($id) ==="
+
+    if (-not (Winget-IsInstalled -Id $id)) {
+        Write-UILog $LogBox "ℹ️ Non installé → rien à mettre à jour."
+        Write-UILog $LogBox ""
+        return
+    }
+
+    try {
+        Write-UILog $LogBox "⏫ Mise à jour en cours..."
+        Winget-UpgradeId -Id $id
+        Write-UILog $LogBox "✅ Mise à jour terminée (si disponible)."
+    } catch {
+        Write-UILog $LogBox "❌ Erreur pendant la mise à jour : $($_.Exception.Message)"
+    }
+    Write-UILog $LogBox ""
+}
+
+function Uninstall-App {
+    param(
+        [pscustomobject]$App,
+        [System.Windows.Forms.TextBox]$LogBox
+    )
+    $name = $App.name
+    $id   = $App.id
+
+    Write-UILog $LogBox "=== UNINSTALL: $name ($id) ==="
+
+    if (-not (Winget-IsInstalled -Id $id)) {
+        Write-UILog $LogBox "ℹ️ Non installé → rien à désinstaller."
+        Write-UILog $LogBox ""
+        return
+    }
+
+    try {
+        Write-UILog $LogBox "🗑️ Désinstallation en cours..."
+        Winget-Uninstall -Id $id
+        Write-UILog $LogBox "✅ Désinstallation terminée."
+    } catch {
+        Write-UILog $LogBox "❌ Erreur pendant la désinstallation : $($_.Exception.Message)"
+    }
+    Write-UILog $LogBox ""
+}
+
+# ----------------------------
+# GUI (TreeView + boutons)
+# ----------------------------
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
-# Vérifie la présence de winget et aide à l'installer si besoin
 Ensure-Winget
 
-# Charge la config des applis
 $apps = Load-AppsConfig
+
+# Normalise les catégories vides
+foreach ($app in $apps) {
+    if (-not $app.PSObject.Properties.Name -contains "category" -or [string]::IsNullOrWhiteSpace($app.category)) {
+        $app | Add-Member -NotePropertyName category -NotePropertyValue "Divers" -Force
+    }
+}
 
 # Form
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Installateur automatique – Ninite perso"
-$form.Size = New-Object System.Drawing.Size(900, 600)
+$form.Text = "Installateur automatique – Ninite perso (winget+GUI+pro)"
+$form.Size = New-Object System.Drawing.Size(1040, 650)
 $form.StartPosition = "CenterScreen"
 
-# Label titre
+# Titre
 $label = New-Object System.Windows.Forms.Label
-$label.Text = "Sélectionne les applications par catégorie :"
+$label.Text = "Catégories → coche les applis à traiter :"
 $label.AutoSize = $true
 $label.Location = New-Object System.Drawing.Point(10, 10)
 $form.Controls.Add($label)
 
-# TreeView pour catégories + applis
+# TreeView
 $tree = New-Object System.Windows.Forms.TreeView
 $tree.Location = New-Object System.Drawing.Point(10, 40)
-$tree.Size = New-Object System.Drawing.Size(520, 480)
+$tree.Size = New-Object System.Drawing.Size(600, 520)
 $tree.CheckBoxes = $true
 $tree.HideSelection = $false
 $tree.ShowLines = $true
@@ -160,114 +246,116 @@ $tree.ShowPlusMinus = $true
 $tree.ShowRootLines = $true
 $form.Controls.Add($tree)
 
-# Zone log
+# Log
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(540, 40)
-$logBox.Size = New-Object System.Drawing.Size(340, 480)
+$logBox.Location = New-Object System.Drawing.Point(620, 40)
+$logBox.Size = New-Object System.Drawing.Size(400, 520)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
 $form.Controls.Add($logBox)
 
-# Bouton Tout cocher
+# Boutons (2 lignes)
+$btnWidth = 190
+$gap = 10
+$leftCol = 10
+$midCol  = 210
+$rightCol = 410
+$lastCol = 610
+
+$y1 = 570
+$y2 = 570
+
 $btnCheckAll = New-Object System.Windows.Forms.Button
 $btnCheckAll.Text = "Tout cocher"
-$btnCheckAll.Location = New-Object System.Drawing.Point(10, 530)
-$btnCheckAll.Width = 120
+$btnCheckAll.Location = New-Object System.Drawing.Point($leftCol, $y1)
+$btnCheckAll.Width = $btnWidth
 $form.Controls.Add($btnCheckAll)
 
-# Bouton Tout décocher
 $btnUncheckAll = New-Object System.Windows.Forms.Button
 $btnUncheckAll.Text = "Tout décocher"
-$btnUncheckAll.Location = New-Object System.Drawing.Point(140, 530)
-$btnUncheckAll.Width = 120
+$btnUncheckAll.Location = New-Object System.Drawing.Point($midCol, $y1)
+$btnUncheckAll.Width = $btnWidth
 $form.Controls.Add($btnUncheckAll)
 
-# Bouton Installer
 $btnInstall = New-Object System.Windows.Forms.Button
 $btnInstall.Text = "Installer la sélection"
-$btnInstall.Location = New-Object System.Drawing.Point(270, 530)
-$btnInstall.Width = 170
+$btnInstall.Location = New-Object System.Drawing.Point($rightCol, $y1)
+$btnInstall.Width = $btnWidth
 $form.Controls.Add($btnInstall)
 
-# Bouton Fermer
+$btnUpdateSel = New-Object System.Windows.Forms.Button
+$btnUpdateSel.Text = "Mettre à jour la sélection"
+$btnUpdateSel.Location = New-Object System.Drawing.Point($lastCol, $y1)
+$btnUpdateSel.Width = $btnWidth
+$form.Controls.Add($btnUpdateSel)
+
+$btnUpdateAll = New-Object System.Windows.Forms.Button
+$btnUpdateAll.Text = "Mettre à jour TOUT"
+$btnUpdateAll.Location = New-Object System.Drawing.Point($leftCol, $y2+$gap)
+$btnUpdateAll.Width = $btnWidth
+$form.Controls.Add($btnUpdateAll)
+
+$btnUninstallSel = New-Object System.Windows.Forms.Button
+$btnUninstallSel.Text = "Désinstaller la sélection"
+$btnUninstallSel.Location = New-Object System.Drawing.Point($midCol, $y2+$gap)
+$btnUninstallSel.Width = $btnWidth
+$form.Controls.Add($btnUninstallSel)
+
+$btnExportSel = New-Object System.Windows.Forms.Button
+$btnExportSel.Text = "Exporter la sélection (JSON)"
+$btnExportSel.Location = New-Object System.Drawing.Point($rightCol, $y2+$gap)
+$btnExportSel.Width = $btnWidth
+$form.Controls.Add($btnExportSel)
+
+$btnImportSel = New-Object System.Windows.Forms.Button
+$btnImportSel.Text = "Importer sélection (JSON)"
+$btnImportSel.Location = New-Object System.Drawing.Point($lastCol, $y2+$gap)
+$btnImportSel.Width = $btnWidth
+$form.Controls.Add($btnImportSel)
+
 $btnClose = New-Object System.Windows.Forms.Button
 $btnClose.Text = "Fermer"
-$btnClose.Location = New-Object System.Drawing.Point(780, 530)
+$btnClose.Location = New-Object System.Drawing.Point(920, $y2+$gap)
 $btnClose.Width = 100
 $form.Controls.Add($btnClose)
 
-# ---------- Construction de l'arbre catégories / applis ----------
-
-# On met une catégorie "Divers" si non renseignée
-foreach ($app in $apps) {
-    if (-not $app.PSObject.Properties.Name -contains "category" -or [string]::IsNullOrWhiteSpace($app.category)) {
-        $app | Add-Member -NotePropertyName category -NotePropertyValue "Divers" -Force
-    }
-}
-
-# Grouper par catégorie
+# ----------------------------
+# Construction de l'arbre
+# ----------------------------
 $grouped = $apps | Sort-Object category, name | Group-Object category
-
-# Flag pour éviter les boucles dans AfterCheck
 $script:SuppressCheckEvent = $false
 
-# Remplir le TreeView
 foreach ($g in $grouped) {
-    $catName = $g.Name
     $catNode = New-Object System.Windows.Forms.TreeNode
-    $catNode.Text = $catName
-    $catNode.Tag  = $null   # les applis sont sur les nœuds enfants
+    $catNode.Text = $g.Name
+    $catNode.Tag  = $null
 
     foreach ($app in ($g.Group | Sort-Object name)) {
         $child = New-Object System.Windows.Forms.TreeNode
         $child.Text = $app.name
         $child.Tag  = $app
-        if ($app.default -eq $true) {
-            $child.Checked = $true
-        }
+        if ($app.default -eq $true) { $child.Checked = $true }
         [void]$catNode.Nodes.Add($child)
     }
-
     [void]$tree.Nodes.Add($catNode)
 }
-
 $tree.ExpandAll()
 
-# ---------- Gestion des cases à cocher dans l'arbre ----------
-
-# Quand on coche/décoche une catégorie, on coche/décoche tous les enfants.
-# Quand on coche/décoche un enfant, on met à jour le parent (catégorie).
-
+# Coche/décoche parent-enfants
 $tree.Add_AfterCheck({
     param($sender, $e)
-
     if ($script:SuppressCheckEvent) { return }
-
     $script:SuppressCheckEvent = $true
-    $node = $e.Node
 
+    $node = $e.Node
     if ($node.Nodes.Count -gt 0) {
-        # Nœud catégorie : reporter l'état sur tous les enfants
-        foreach ($child in $node.Nodes) {
-            $child.Checked = $node.Checked
-        }
+        foreach ($child in $node.Nodes) { $child.Checked = $node.Checked }
     } else {
-        # Nœud appli : mettre à jour le parent
         $parent = $node.Parent
         if ($parent -ne $null) {
-            $allChecked  = $true
-            $allUnchecked = $true
-
-            foreach ($child in $parent.Nodes) {
-                if ($child.Checked) {
-                    $allUnchecked = $false
-                } else {
-                    $allChecked = $false
-                }
-            }
-
-            # Catégorie cochée seulement si TOUTES les applis de la catégorie sont cochées
+            $allChecked = $true
+            foreach ($child in $parent.Nodes) { if (-not $child.Checked) { $allChecked = $false } }
             $parent.Checked = $allChecked
         }
     }
@@ -275,78 +363,204 @@ $tree.Add_AfterCheck({
     $script:SuppressCheckEvent = $false
 })
 
-# ---------- Fonctions utilitaires ----------
-
+# ----------------------------
+# Utilitaires sur la sélection
+# ----------------------------
 function Get-CheckedAppsFromTree {
-    param(
-        [System.Windows.Forms.TreeView]$TreeView
-    )
-
+    param([System.Windows.Forms.TreeView]$TreeView)
     $selected = @()
-
     foreach ($catNode in $TreeView.Nodes) {
         foreach ($child in $catNode.Nodes) {
-            if ($child.Checked -and $child.Tag -ne $null) {
-                $selected += $child.Tag
-            }
+            if ($child.Checked -and $child.Tag -ne $null) { $selected += $child.Tag }
         }
     }
-
-    return $selected
+    $selected
 }
 
-# ---------- Événements boutons ----------
+function Set-CheckedFromIds {
+    param(
+        [System.Windows.Forms.TreeView]$TreeView,
+        [string[]]$Ids
+    )
+    $idsHash = @{}
+    foreach ($id in $Ids) { $idsHash[$id] = $true }
 
+    $script:SuppressCheckEvent = $true
+    foreach ($catNode in $TreeView.Nodes) {
+        $catShouldCheck = $true
+        foreach ($child in $catNode.Nodes) {
+            if ($child.Tag -and $idsHash.ContainsKey($child.Tag.id)) {
+                $child.Checked = $true
+            } else {
+                $child.Checked = $false
+                $catShouldCheck = $false
+            }
+        }
+        $catNode.Checked = $catShouldCheck -and ($catNode.Nodes.Count -gt 0)
+    }
+    $script:SuppressCheckEvent = $false
+}
+
+# ----------------------------
+# Actions boutons
+# ----------------------------
 $btnCheckAll.Add_Click({
     $script:SuppressCheckEvent = $true
-    foreach ($catNode in $tree.Nodes) {
+    foreach ($catNode in $tree.Nodes) { 
         $catNode.Checked = $true
-        foreach ($child in $catNode.Nodes) {
-            $child.Checked = $true
-        }
+        foreach ($child in $catNode.Nodes) { $child.Checked = $true }
     }
     $script:SuppressCheckEvent = $false
 })
 
 $btnUncheckAll.Add_Click({
     $script:SuppressCheckEvent = $true
-    foreach ($catNode in $tree.Nodes) {
+    foreach ($catNode in $tree.Nodes) { 
         $catNode.Checked = $false
-        foreach ($child in $catNode.Nodes) {
-            $child.Checked = $false
-        }
+        foreach ($child in $catNode.Nodes) { $child.Checked = $false }
     }
     $script:SuppressCheckEvent = $false
 })
 
-$btnClose.Add_Click({
-    $form.Close()
-})
+$btnClose.Add_Click({ $form.Close() })
 
 $btnInstall.Add_Click({
-    $selectedApps = Get-CheckedAppsFromTree -TreeView $tree
-
-    if ($selectedApps.Count -eq 0) {
-        [System.Windows.Forms.MessageBox]::Show(
-            "Aucune application sélectionnée.",
-            "Info",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        ) | Out-Null
+    $selected = Get-CheckedAppsFromTree -TreeView $tree
+    if ($selected.Count -eq 0) {
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Info",
+            [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
         return
     }
 
     $btnInstall.Enabled = $false
-    $logBox.AppendText("Démarrage des installations...`r`n`r`n")
-
-    foreach ($app in $selectedApps) {
-        Install-App -App $app -LogBox $logBox
-    }
-
-    $logBox.AppendText("🎉 Terminé. Pense à redémarrer si nécessaire.`r`n")
+    Write-UILog $logBox "=== INSTALLATION de la sélection ===`r`n"
+    foreach ($app in $selected) { Install-App -App $app -LogBox $logBox }
+    Write-UILog $logBox "🎉 Installations terminées.`r`n"
     $btnInstall.Enabled = $true
 })
 
-# ---------- Lancer la fenêtre ----------
+$btnUpdateSel.Add_Click({
+    $selected = Get-CheckedAppsFromTree -TreeView $tree
+    if ($selected.Count -eq 0) {
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Info",
+            [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        return
+    }
 
+    $btnUpdateSel.Enabled = $false
+    Write-UILog $logBox "=== MISE À JOUR de la sélection ===`r`n"
+    foreach ($app in $selected) { Update-App -App $app -LogBox $logBox }
+    Write-UILog $logBox "✅ Mises à jour effectuées (si disponibles).`r`n"
+    $btnUpdateSel.Enabled = $true
+})
+
+$btnUpdateAll.Add_Click({
+    $btnUpdateAll.Enabled = $false
+    Write-UILog $logBox "=== MISE À JOUR DE TOUS LES PAQUETS DISPONIBLES ==="
+    try {
+        Winget-UpgradeAll
+        Write-UILog $logBox "✅ Mise à jour globale terminée (si disponibles).`r`n"
+    } catch {
+        Write-UILog $logBox "❌ Erreur update all : $($_.Exception.Message)`r`n"
+    }
+    $btnUpdateAll.Enabled = $true
+})
+
+$btnUninstallSel.Add_Click({
+    $selected = Get-CheckedAppsFromTree -TreeView $tree
+    if ($selected.Count -eq 0) {
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Info",
+            [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        return
+    }
+
+    $confirm = [System.Windows.Forms.MessageBox]::Show(
+        "Tu t'apprêtes à désinstaller les applications cochées. Continuer ?",
+        "Confirmation",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo,
+        [System.Windows.Forms.MessageBoxIcon]::Warning
+    )
+
+    if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+
+    $btnUninstallSel.Enabled = $false
+    Write-UILog $logBox "=== DÉSINSTALLATION de la sélection ===`r`n"
+    foreach ($app in $selected) { Uninstall-App -App $app -LogBox $logBox }
+    Write-UILog $logBox "✅ Désinstallations terminées.`r`n"
+    $btnUninstallSel.Enabled = $true
+})
+
+$btnExportSel.Add_Click({
+    $selected = Get-CheckedAppsFromTree -TreeView $tree
+    if ($selected.Count -eq 0) {
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée à exporter.","Info",
+            [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        return
+    }
+
+    $sfd = New-Object System.Windows.Forms.SaveFileDialog
+    $sfd.Filter = "JSON (*.json)|*.json"
+    $sfd.Title  = "Exporter la sélection"
+    $sfd.FileName = "apps-selection.json"
+    if ($sfd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+        try {
+            $export = @()
+            foreach ($app in $selected) {
+                $export += [pscustomobject]@{
+                    name     = $app.name
+                    id       = $app.id
+                    category = $app.category
+                    default  = $app.default
+                }
+            }
+            ($export | ConvertTo-Json -Depth 4 | Out-String).Trim() | Set-Content -Path $sfd.FileName -Encoding UTF8
+            Write-UILog $logBox "💾 Export effectué vers: $($sfd.FileName)`r`n"
+        } catch {
+            Write-UILog $logBox "❌ Erreur export: $($_.Exception.Message)`r`n"
+        }
+    }
+})
+
+$btnImportSel.Add_Click({
+    $ofd = New-Object System.Windows.Forms.OpenFileDialog
+    $ofd.Filter = "JSON (*.json)|*.json|Tous (*.*)|*.*"
+    $ofd.Title  = "Importer une sélection"
+    if ($ofd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+        try {
+            $json = Get-Content $ofd.FileName -Raw | ConvertFrom-Json
+            # Autoriser 2 formats : array d'objets {name,id,...} OU array d'ids "Vendor.Package"
+            $ids = @()
+            if ($json -is [System.Array]) {
+                foreach ($it in $json) {
+                    if ($it -is [string]) {
+                        $ids += $it
+                    } elseif ($it.PSObject.Properties.Name -contains "id") {
+                        $ids += [string]$it.id
+                    }
+                }
+            } elseif ($json.PSObject.Properties.Name -contains "apps") {
+                foreach ($it in $json.apps) {
+                    if ($it.PSObject.Properties.Name -contains "id") { $ids += [string]$it.id }
+                }
+            }
+
+            if ($ids.Count -eq 0) {
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Aucun identifiant d'application détecté dans le fichier.",
+                    "Import vide",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Information
+                ) | Out-Null
+                return
+            }
+
+            Set-CheckedFromIds -TreeView $tree -Ids $ids
+            Write-UILog $logBox "📥 Import: $($ids.Count) app(s) cochée(s) depuis $($ofd.FileName).`r`n"
+        } catch {
+            Write-UILog $logBox "❌ Erreur import: $($_.Exception.Message)`r`n"
+        }
+    }
+})
+
+# Lancer la fenêtre
 [System.Windows.Forms.Application]::Run($form)
