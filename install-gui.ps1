@@ -224,7 +224,7 @@ foreach ($app in $apps) {
 
 # Form
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Installateur automatique – Ninite perso (winget+GUI+pro)"
+$form.Text = "Installateur automatique – SetupNest (winget+GUI+pro)"
 $form.Size = New-Object System.Drawing.Size(1040, 650)
 $form.StartPosition = "CenterScreen"
 

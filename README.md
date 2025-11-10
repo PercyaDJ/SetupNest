@@ -1,109 +1,83 @@
 
-# Ninite perso – Installateur automatique d’applications (winget + GUI)
+# SetupNest Winget GUI “sous stéroïdes”
 
-Ce projet est un équivalent “fait maison” de [Ninite](https://ninite.com/), basé sur :
+Un installateur graphique pour Windows basé sur winget qui permet d’installer, mettre à jour, désinstaller, exporter et importer des listes d’applications… sans aller chasser les installeurs à la main.
 
-- **PowerShell**
-- **winget** (le gestionnaire de paquets Windows)
-- Une **interface graphique (GUI)** avec catégories dépliables
+> Objectif : gagner des heures à chaque fresh install (chez toi, chez des proches), avec un catalogue JSON unique et une UI claire.
 
-Il permet d’installer rapidement une sélection d’applications sur :
-- un **nouveau PC perso**,
-- le **PC d’un proche**,
-- ou n’importe quel Windows récent,  
-sans avoir à télécharger chaque logiciel à la main.
+---
+
+## Sommaire
+
+- [Pourquoi ce projet ?](#pourquoi-ce-projet-)
+- [Fonctionnalités](#fonctionnalités)
+- [Prérequis](#prérequis)
+- [Structure du dépôt](#structure-du-dépôt)
+- [Installation & premier lancement](#installation--premier-lancement)
+- [Utilisation (pas à pas)](#utilisation-pas-à-pas)
+- [Catalogue d’apps (`apps.json`)](#catalogue-dapps-appsjson)
+  - [Schéma](#schéma)
+  - [Exemples](#exemples)
+  - [Catégories recommandées](#catégories-recommandées)
+  - [Trouver un ID winget](#trouver-un-id-winget)
+- [Import / Export (formats)](#import--export-formats)
+- [Mise à jour / Désinstallation : subtilités](#mise-à-jour--désinstallation-subtilités)
+- [Bonnes pratiques & sécurité](#bonnes-pratiques--sécurité)
+- [Dépannage (tableau)](#dépannage-tableau)
+- [FAQ](#faq)
+- [Roadmap](#roadmap)
+- [Contribution](#contribution)
+- [Auteur](#auteur)
+
+---
+
+## Pourquoi ce projet ?
+
+- Standardiser l’installation d’un socle logiciel (pour toi, famille/amis).
+- Arrêter de télécharger les .exe un par un : winget s’occupe du fetch/instal/update.
+- Un fichier JSON central pour tout le monde (porté sur clé USB, GitHub…).
 
 ---
 
 ## Fonctionnalités
 
-- Interface graphique en Windows Forms avec un **TreeView** :
-  - Catégories dépliables : Navigateur, Bureautique, Communication, Multimédia, Outils, Sécurité, Création, Dev, Jeux, Cloud & Sync, etc.
-  - Applications listées sous chaque catégorie avec **cases à cocher**
-  - Boutons **“Tout cocher”** / **“Tout décocher”**
-  - Bouton **“Installer la sélection”**
-- Installation silencieuse via **winget**
-- Fichier unique `apps.json` pour gérer **tous les logiciels**
-- Indication des applis “par défaut” à cocher automatiquement
-- Journal d’installation dans une zone de log à droite
-- Vérification de la présence de **winget** au démarrage :
-  - Si `winget` n’est pas disponible, le script :
-    - affiche un message explicatif,
-    - propose d’ouvrir la page *App Installer* dans le Microsoft Store,
-    - puis se ferme proprement.
+- UI par catégories (TreeView) avec cases à cocher
+- Installer la sélection (ignore ce qui est déjà présent)
+- Mettre à jour la sélection (`winget upgrade --id <Pkg>`)
+- Mettre à jour TOUT (`winget upgrade --all`)
+- Désinstaller la sélection (`winget uninstall --id <Pkg>`)
+- Exporter la sélection → JSON ré‑importable
+- Importer une sélection → coche automatiquement les apps correspondantes
+- Journal en temps réel (installations, updates, erreurs)
+- Vérification winget au démarrage : si absent, ouverture de la page *App Installer* (Microsoft Store), puis fermeture propre du script
+
+> ⚠️ Le script opère uniquement sur les *IDs winget* présents dans `apps.json` (voir plus bas).
 
 ---
 
 ## Prérequis
 
-- Windows 10 ou 11
-- PowerShell (intégré à Windows)
-- **winget** installé  
-  → Si ce n’est pas le cas, le script t’indiquera comment installer *App Installer* via le Microsoft Store.
+- Windows 10/11
+- PowerShell
+- winget (via *App Installer* du Microsoft Store)  
+  → Le script détecte son absence et propose d’ouvrir la page du Store.
 
 ---
 
-## Structure du projet
+## Structure du dépôt
 
-```text
-ninite-perso/
-├─ install-gui.ps1          # Script principal avec interface graphique (TreeView + winget)
-├─ apps.json                # Liste de toutes les applis disponibles, classées par catégorie
-├─ start-ninite-perso.cmd   # (Optionnel) Script pour lancer l’outil en double-cliquant
+```
+SetupNest/
+├─ install-gui.ps1          # Script principal (GUI + actions winget)
+├─ apps.json                # Catalogue d’apps (id, catégorie, défaut)
+├─ start-SetupNest.cmd      # Double‑clic pour lancer la GUI
 └─ README.md
 ```
 
-### `install-gui.ps1`
-
-- Vérifie que `winget` est présent (sinon explique comment l’installer).
-- Charge les applis définies dans `apps.json`.
-- Construit une interface graphique avec :
-  - un **TreeView** (catégories / applis),
-  - une zone de log,
-  - des boutons d’action.
-
-### `apps.json`
-
-- Fichier de configuration au format JSON
-- Contient la **liste des applications** installables
-- Chaque entrée contient :
-  - `name` : le nom affiché dans l’interface
-  - `id` : l’ID winget du paquet
-  - `category` : catégorie (Navigateur, Bureautique, Outils, Photo, etc.)
-  - `default` : `true` si l’app est cochée par défaut
-
-Extrait :
-
-```json
-[
-  {
-    "name": "Google Chrome",
-    "id": "Google.Chrome",
-    "category": "Navigateur",
-    "default": true
-  },
-  {
-    "name": "LibreOffice",
-    "id": "TheDocumentFoundation.LibreOffice",
-    "category": "Bureautique",
-    "default": false
-  },
-  {
-    "name": "Discord",
-    "id": "Discord.Discord",
-    "category": "Communication",
-    "default": true
-  }
-]
-```
-
-### `start-ninite-perso.cmd`
-
-Pour pouvoir lancer l’outil par simple double-clic (utile pour les users simple), tu peux ajouter un fichier `start-ninite-perso.cmd` :
-
+### `start-SetupNest.cmd` (optionnel mais recommandé)
+Permet un lancement double‑clic (utile chez des proches) :
 ```bat
 @echo off
-:: Lance le script PowerShell avec GUI
 powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -File "%~dp0install-gui.ps1"
 ```
 
@@ -111,127 +85,47 @@ powershell.exe -ExecutionPolicy Bypass -NoLogo -NoProfile -File "%~dp0install-gu
 
 ## Installation & premier lancement
 
-### 1. Cloner ou télécharger le dépôt
-
+### 1) Récupérer le projet
 ```powershell
-git clone https://github.com/PercyaDJ/ninite-perso.git
-cd ninite-perso
+git clone https://github.com/PercyaDJ/SetupNest.git
+cd SetupNest
 ```
+ou télécharger le ZIP depuis GitHub et extraire.
 
-Ou télécharger le ZIP depuis GitHub et l’extraire.
-
-### 2. Autoriser l’exécution de scripts PowerShell
-
-Si ce n’est pas déjà fait :
-
+### 2) Autoriser les scripts PowerShell
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-Accepter (`O` / `Y`) si une confirmation est demandée.
-
-### 3. Lancer l’interface graphique
-
-Deux options :
-
-#### a) Via PowerShell
-
-Depuis le dossier du projet :
-
+### 3) Lancer l’application
 ```powershell
 .\install-gui.ps1
 ```
-
-#### b) En double-cliquant
-
-- Double-cliquer sur `start-ninite-perso.cmd`.
-
-Dans tous les cas, une fenêtre s’ouvre avec :
-- les catégories,
-- les applis sous chaque catégorie,
-- les boutons d’action,
-- un log à droite.
+ou double‑cliquer sur `start-SetupNest.cmd` si présent.
 
 ---
 
-## Utilisation de l’outil
+## Utilisation
 
-1. **Lancer le script** :
-
-   ```powershell
-   .\install-gui.ps1
-   ```
-
-   ou double-cliquer sur `start-ninite-perso.cmd`.
-
-2. **Naviguer dans les catégories** :
-   - Chaque catégorie (Navigateur, Bureautique, Communication, etc.) se présente comme un nœud dépliable.
-   - Clique sur le petit triangle à gauche pour déplier/replier.
-
-3. **Sélectionner les applications** :
-   - Coche/décoche les applis à installer sous chaque catégorie.
-   - Tu peux aussi cocher/décocher une catégorie entière :
-     - cocher une catégorie coche toutes ses applis,
-     - décocher la catégorie les décoche toutes.
-   - Les applis avec `"default": true` dans `apps.json` sont **cochées par défaut**.
-
-4. **Boutons rapides** :
-   - **“Tout cocher”** → coche toutes les applis de toutes les catégories.
-   - **“Tout décocher”** → décoche tout.
-
-5. **Lancer les installations** :
-   - Cliquer sur **“Installer la sélection”**.
-   - Suivre le journal dans le panneau de droite :
-     - ✅ déjà installé → l’app est ignorée
-     - ⏬ installation en cours
-     - ❌ erreur éventuelle (ex : ID incorrect, problème de source)
-
-6. **Fermer** :
-   - Une fois terminé, clic sur **“Fermer”**.
-   - Pour certains logiciels, un **redémarrage** peut être recommandé.
+1. Déplie une catégorie ▸ et coche les applis à traiter.  
+   *Astuce* : cocher une catégorie coche toutes ses applis.
+2. Choisis une action :
+   - Installer la sélection : installe ce qui manque.
+   - Mettre à jour la sélection : update ciblé des applis cochées *déjà installées*.
+   - Mettre à jour TOUT : update global (`winget upgrade --all`).
+   - Désinstaller la sélection : désinstalle les applis cochées *déjà installées*.
+   - Exporter sélection (JSON) : sauvegarde les apps cochées dans un fichier JSON.
+   - Importer sélection (JSON) : coche automatiquement les apps dont l’ID figure dans le JSON.
+3. Surveille le journal à droite (✅ déjà installé, ⏬ install, ⏫ update, 🗑️ uninstall, ❌ erreur).
+4. Ferme en fin d’opérations. Certains paquets peuvent nécessiter un redémarrage.
 
 ---
 
-## Ajouter ou modifier des applications
+## Catalogue d’apps (`apps.json`)
 
-Tout se passe dans `apps.json`.
+Le cœur du projet. Le script n’affiche et ne traite que les apps référencées ici.
 
-### 1. Catégories recommandées
-
-Tu peux t’en tenir à une dizaine de catégories “réelles” :
-
-- `Navigateur`
-- `Bureautique`
-- `Communication`
-- `Multimédia`
-- `Outils`
-- `Sécurité`
-- `Création`
-- `Dev`
-- `Jeux`
-- `Cloud & Sync`
-
-Ces catégories apparaissent telles quelles dans l’interface (nœuds de l’arbre).
-
-### 2. Trouver l’ID winget d’un logiciel
-
-Dans PowerShell, sur une machine Windows avec winget :
-
-```powershell
-winget search "NomDuLogiciel"
-```
-
-Exemple :
-
-```powershell
-winget search "Google Chrome"
-```
-
-Regarde la colonne **Id**.  
-C’est cette valeur qu’il faut mettre dans `id` dans le JSON.
-
-Exemple :
-
+### Schéma
 ```json
 {
   "name": "Google Chrome",
@@ -240,62 +134,128 @@ Exemple :
   "default": true
 }
 ```
+- `name` : libellé affiché dans l’UI  
+- `id` : ID winget du paquet (voir ci‑dessous)  
+- `category` : l’une des catégories (ex. `Navigateur`, `Bureautique`, `Dev`, …)  
+- `default` : `true` si cochée par défaut, sinon `false`
 
-### 3. Gérer les applis cochées par défaut
-
-Le champ `default` permet de choisir ce qui est déjà coché quand tu ouvres l’outil :
-
-- `true` → l’appli sera cochée automatiquement
-- `false` → décochée par défaut
-
-Exemple :
-
+### Exemples
 ```json
-{
-  "name": "7-Zip",
-  "id": "7zip.7zip",
-  "category": "Outils",
-  "default": true
-}
+[
+  { "name": "Google Chrome", "id": "Google.Chrome", "category": "Navigateur", "default": true },
+  { "name": "LibreOffice", "id": "TheDocumentFoundation.LibreOffice", "category": "Bureautique", "default": true },
+  { "name": "Discord", "id": "Discord.Discord", "category": "Communication", "default": true },
+  { "name": "VLC media player", "id": "VideoLAN.VLC", "category": "Multimédia", "default": true },
+  { "name": "7-Zip", "id": "7zip.7zip", "category": "Outils", "default": true },
+  { "name": "Bitwarden", "id": "Bitwarden.Bitwarden", "category": "Sécurité", "default": true },
+  { "name": "GIMP", "id": "GIMP.GIMP", "category": "Création", "default": false },
+  { "name": "Visual Studio Code", "id": "Microsoft.VisualStudioCode", "category": "Dev", "default": true },
+  { "name": "Steam", "id": "Valve.Steam", "category": "Jeux", "default": false },
+  { "name": "Nextcloud Desktop", "id": "Nextcloud.NextcloudDesktop", "category": "Cloud & Sync", "default": false }
+]
 ```
+
+### Catégories recommandées
+`Navigateur`, `Bureautique`, `Communication`, `Multimédia`, `Outils`, `Sécurité`, `Création`, `Dev`, `Jeux`, `Cloud & Sync`  
+
+### Trouver un ID winget
+
+Sur une machine Windows avec winget :
+```powershell
+winget search "NomDuLogiciel"
+```
+Repère la colonne Id et utilise‑la dans `apps.json`.
+
+---
+
+## Import / Export (formats)
+
+Le bouton Exporter sauvegarde la sélection cochée dans un fichier JSON.  
+Le bouton Importer coche automatiquement les applis correspondantes dans l’UI.
+
+Formats acceptés à l’import :
+
+### A) Tableau d’IDs winget
+```json
+["Google.Chrome","VideoLAN.VLC","Microsoft.VisualStudioCode"]
+```
+
+### B) Tableau d’objets complets (compatible `apps.json`)
+```json
+[
+  { "name": "VLC media player", "id": "VideoLAN.VLC", "category": "Multimédia", "default": true },
+  { "name": "Visual Studio Code", "id": "Microsoft.VisualStudioCode", "category": "Dev", "default": true }
+]
+```
+
+> Si un ID importé n’existe pas dans ton `apps.json`, il est ignoré (tu peux élargir ton catalogue et ré‑importer).
+
+---
+
+## Mise à jour / Désinstallation : subtilités
+
+- Update sélection : ne concerne que les applis cochées et déjà installées.  
+- Update all : `winget upgrade --all` met à jour *tout* ce que winget sait gérer, même si non listé dans `apps.json`.  
+- Uninstall sélection : ne désinstalle que les applis cochées et déjà installées.  
+- Certains paquets peuvent avoir des installers interactifs qui affichent leurs propres dialogues (rare).
+
+---
+
+## Bonnes pratiques & sécurité
+
+- Lancer la GUI en tant qu’administrateur pour éviter les blocages UAC sur certains paquets.
+- Conserver `apps.json` dans un contrôle de version (Git) pour tracer les changements de catalogue.
+- Ne pas multiplier les catégories (max ~10).  
+- Pour un usage entreprise/AD : privilégier une version CLI séparée (sans GUI), signature de scripts, GPO, logs centralisés. *(Hors périmètre de ce README grand public, mais en roadmap.)*
 
 ---
 
 ## Dépannage
 
-- **Message “winget n’est pas disponible”**  
-  → Le script affiche un message et peut ouvrir la page *App Installer* dans le Microsoft Store.  
-  Installe *App Installer*, puis relance le script.
-
-- **Rien ne s’installe pour une app spécifique**  
-  → Vérifier que l’ID dans `apps.json` correspond exactement à l’ID winget (`winget search ...`).
-
-- **Erreur JSON / le script refuse de démarrer**  
-  → Vérifier que `apps.json` contient un JSON valide :
-    - Pas de virgule en trop à la fin
-    - Crochets `[` `]` pour le tableau global
-    - Accolades `{` `}` bien fermées
+| Symptôme | Cause probable | Correctif |
+|---|---|---|
+| Message “winget n’est pas disponible” au lancement | App Installer non installée | Installer *App Installer* via le Microsoft Store (la GUI ouvre la page), puis relancer |
+| Une app ne s’installe pas | `id` erroné / package non silencieux / droits | Vérifier `winget search "Nom"`, lancer la GUI en admin |
+| Update (“sélection”) ne fait rien | App non installée ou déjà à jour | C’est normal ; installer d’abord, ou utiliser Update all |
+| Update all ne fait rien | Aucune mise à jour dispo | Normal |
+| Import JSON ne coche rien | IDs non présents dans ton `apps.json` | Ajouter ces apps à `apps.json`, puis ré‑importer |
+| “JSON invalide” | Virgule traînante, crochets/accolades | Valider le JSON (outil en ligne), corriger puis relancer |
 
 ---
 
-## Pistes d’amélioration possibles
+## FAQ
 
-Idées pour faire évoluer le projet :
+Dois‑je être admin ?  
+Souvent oui, selon les paquets. Lancer PowerShell/GUI en admin est conseillé.
 
-- Gestion de **profils** (ex : `Bureau`, `Gaming`, `Photo`, `Dev`) avec plusieurs fichiers JSON.
-- Export automatique d’un **log dans un fichier** (`C:\ProgramData\ninite-perso\install.log`).
-- Paramètres en ligne de commande :
-  - Auto-install de certaines catégories
-  - Mode silencieux complet sans GUI
-- Ajout d’options de **désinstallation** (via `winget uninstall`).
-- Version **entreprise / AD** :
-  - script CLI sans GUI,
-  - intégration dans des GPO,
-  - logs centralisés.
+Puis‑je gérer plusieurs profils (bureau, dev, gaming) ?  
+Oui, maintiens plusieurs fichiers (`apps-bureau.json`, `apps-dev.json`…), et renomme‑les en `apps.json` selon le besoin. *(Un paramètre CLI `-Profile` est envisagé dans la roadmap.)*
+
+Pourquoi winget et pas Chocolatey ?  
+winget est natif Windows 10/11, maintenu par Microsoft et couvre l’essentiel des paquets grand public.
+
+Où sont les logs ?  
+Le journal s’affiche dans la GUI. L’export vers fichier local (`C:\ProgramData\SetupNest\install.log`) est prévu en roadmap.
+
+---
+
+## Roadmap
+
+- Profils multiples (sélection du JSON depuis l’UI / paramètre CLI)
+- Export automatique des logs vers fichier
+- Mode CLI (sans GUI) et packaging pour usage pro
+- Version entreprise/AD : GPO, signature du script, dépôt central des JSON, logs centralisés
+
+---
+
+## Contribution
+
+- Fork · branche · PR ou ouvre une *issue* pour proposer des applis/améliorations.
+- Merci de conserver un schéma JSON simple et des catégories cohérentes.
+- Ajoute un extrait `apps.json` dans tes PR si tu ajoutes des apps.
 
 ---
 
 ## Auteur
 
-Projet maintenu par **Percya**  
-Pensé pour un usage perso / famille / amis afin d’éviter les soirées “install de programmes” à rallonge. 😄
+**Percya** Parce qu’on préfère boire un café pendant que les installs se font toutes seules. ☕
