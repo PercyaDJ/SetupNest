@@ -155,7 +155,7 @@ Le cœur du projet. Le script n’affiche et ne traite que les apps référencé
 ]
 ```
 
-### Catégories recommandées
+### Catégories utilisées
 `Navigateur`, `Bureautique`, `Communication`, `Multimédia`, `Outils`, `Sécurité`, `Création`, `Dev`, `Jeux`, `Cloud & Sync`  
 
 ### Trouver un ID winget
@@ -168,7 +168,7 @@ Repère la colonne Id et utilise‑la dans `apps.json`.
 
 ---
 
-## Import / Export (formats)
+## Import / Export
 
 Le bouton Exporter sauvegarde la sélection cochée dans un fichier JSON.  
 Le bouton Importer coche automatiquement les applis correspondantes dans l’UI.
