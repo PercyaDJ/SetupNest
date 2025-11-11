@@ -1,9 +1,57 @@
 [
   {
+    "name": "Codex CLI",
+    "id": "OpenAI.Codex",
+    "category": "IA",
+    "default": false
+  },
+  {
+    "name": "Transformer Lab",
+    "id": "TransformerLab.TransformerLab",
+    "category": "IA",
+    "default": false
+  },
+  {
+    "name": "Ollama",
+    "id": "Ollama.Ollama",
+    "category": "IA",
+    "default": false
+  },
+  {
+    "name": "Claude Code",
+    "id": "Anthropic.ClaudeCode",
+    "category": "IA",
+    "default": false
+  },
+  {
+    "name": "Claude",
+    "id": "Anthropic.Claude",
+    "category": "IA",
+    "default": false
+  },
+  {
+    "name": "Cursor",
+    "id": "Anysphere.Cursor",
+    "category": "IA",
+    "default": false
+  },
+  {
     "name": "Google Chrome",
     "id": "Google.Chrome",
     "category": "Navigateur",
-    "default": true
+    "default": false
+  },
+  {
+    "name": "Guardian Browser",
+    "id": "Meazure.GuardianBrowser",
+    "category": "Navigateur",
+    "default": false
+  },
+  {
+    "name": "DuckDuckGo",
+    "id": "DuckDuckGo.DesktopBrowser",
+    "category": "Navigateur",
+    "default": false
   },
   {
     "name": "Mozilla Firefox",
@@ -40,7 +88,7 @@
     "name": "LibreOffice",
     "id": "TheDocumentFoundation.LibreOffice",
     "category": "Bureautique",
-    "default": true
+    "default": false
   },
   {
     "name": "ONLYOFFICE Desktop Editors",
@@ -58,7 +106,7 @@
     "name": "Adobe Acrobat Reader",
     "id": "Adobe.Acrobat.Reader.64-bit",
     "category": "Bureautique",
-    "default": true
+    "default": false
   },
   {
     "name": "SumatraPDF",
@@ -70,6 +118,12 @@
   {
     "name": "Mozilla Thunderbird",
     "id": "Mozilla.Thunderbird",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Beeper",
+    "id": "Beeper.Beeper",
     "category": "Communication",
     "default": false
   },
@@ -120,7 +174,7 @@
     "name": "VLC media player",
     "id": "VideoLAN.VLC",
     "category": "Multimédia",
-    "default": true
+    "default": false
   },
   {
     "name": "Spotify",
@@ -157,11 +211,23 @@
     "name": "7-Zip",
     "id": "7zip.7zip",
     "category": "Outils",
-    "default": true
+    "default": false
   },
   {
     "name": "WinRAR",
     "id": "RARLab.WinRAR",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Ledger Live",
+    "id": "LedgerHQ.LedgerLive",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "ParaView",
+    "id": "Kitware.ParaView",
     "category": "Outils",
     "default": false
   },
@@ -175,7 +241,7 @@
     "name": "Notepad++",
     "id": "Notepad++.Notepad++",
     "category": "Outils",
-    "default": true
+    "default": false
   },
   {
     "name": "Notion",
@@ -252,10 +318,28 @@
     "default": false
   },
   {
+    "name": "CyberHive Connect",
+    "id": "CyberHive.Connect",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Burp Suite Professional",
+    "id": "PortSwigger.BurpSuite.Professional",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Burp Suite Community Edition",
+    "id": "PortSwigger.BurpSuite.Community",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "Bitwarden",
     "id": "Bitwarden.Bitwarden",
     "category": "Sécurité",
-    "default": true
+    "default": false
   },
   {
     "name": "KeePass",
@@ -278,6 +362,12 @@
   {
     "name": "ProtonVPN",
     "id": "Proton.ProtonVPN",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Mullvad VPN",
+    "id": "MullvadVPN.MullvadVPN",
     "category": "Sécurité",
     "default": false
   },
@@ -319,6 +409,18 @@
     "default": false
   },
   {
+    "name": "Elgato Studio",
+    "id": "Elgato.Studio",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Canva",
+    "id": "Canva.Canva",
+    "category": "Création",
+    "default": false
+  },
+  {
     "name": "GIMP",
     "id": "GIMP.GIMP.3",
     "category": "Création",
@@ -327,6 +429,18 @@
   {
     "name": "Inkscape",
     "id": "Inkscape.Inkscape",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Wondershare Filmora",
+    "id": "Wondershare.Filmora",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Wondershare FilmoraPro",
+    "id": "Wondershare.Filmora.Pro",
     "category": "Création",
     "default": false
   },
@@ -359,13 +473,73 @@
     "name": "Visual Studio Code",
     "id": "Microsoft.VisualStudioCode",
     "category": "Dev",
-    "default": true
+    "default": false
+  },
+  {
+    "name": "Atlassian CLI",
+    "id": "Atlassian.AtlassianCLI",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Tailwind CSS",
+    "id": "TailwindLabs.TailwindCSS",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Eclipse SUMO",
+    "id": "EclipseFoundation.SUMO",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Chrome Remote Desktop Host",
+    "id": "Google.ChromeRemoteDesktopHost",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "VIM",
+    "id": "vim.vim",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Neovim",
+    "id": "Neovim.Neovim",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Firebase CLI Tools",
+    "id": "Google.FirebaseCLI",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Termius",
+    "id": "Termius.Termius",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "WinSSHTerm",
+    "id": "P-StSoftware.WinSSHTerm",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "PuTTY",
+    "id": "PuTTY.PuTTY",
+    "category": "Dev",
+    "default": false
   },
   {
     "name": "Git",
     "id": "Git.Git",
     "category": "Dev",
-    "default": true
+    "default": false
   },
   {
     "name": "GitHub Desktop",
@@ -448,6 +622,18 @@
     "default": false
   },
   {
+    "name": "AWS CLI",
+    "id": "Amazon.AWSCLI",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Microsoft Azure CLI",
+    "id": "Microsoft.AzureCLI",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
     "name": "MEGASync",
     "id": "Mega.MEGASync",
     "category": "Cloud & Sync",
@@ -456,6 +642,12 @@
   {
     "name": "Nextcloud Desktop",
     "id": "Nextcloud.NextcloudDesktop",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Nextcloud Talk",
+    "id": "Nextcloud.Talk",
     "category": "Cloud & Sync",
     "default": false
   },
