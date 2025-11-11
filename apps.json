@@ -736,6 +736,36 @@
     "default": false
   },
   {
+    "name": "Azure extension for Command Palette",
+    "id": "Microsoft.CmdPalAzureExtension",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Azure Functions Core Tools",
+    "id": "Microsoft.Azure.FunctionsCoreTools",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Azure IoT Explorer Preview",
+    "id": "Microsoft.Azure.IoTExplorer",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Azure Media Services Explorer",
+    "id": "Microsoft.AzureMediaServicesExplorer",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Azure Monitor Agent",
+    "id": "Microsoft.AzureMonitorAgent",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
     "name": "AWS CLI",
     "id": "Amazon.AWSCLI",
     "category": "Cloud & Sync",
