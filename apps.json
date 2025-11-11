@@ -109,6 +109,18 @@
     "default": false
   },
   {
+    "name": "Docusign Edit",
+    "id": "DocuSign.DocusignEdit",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Docusign PKI",
+    "id": "DocuSign.DocusignPKI",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
     "name": "Deezer",
     "id": "Deezer.Deezer",
     "category": "Bureautique",
