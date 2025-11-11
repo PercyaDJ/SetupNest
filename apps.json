@@ -1000,6 +1000,12 @@
     "default": false
   },
   {
+    "name": "Drivers Cloud",
+    "id": "Cybelsoft.DriversCloud",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
     "name": "Cozy Drive",
     "id": "CozyCloud.CozyDrive",
     "category": "Cloud & Sync",
