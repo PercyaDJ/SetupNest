@@ -103,6 +103,18 @@
     "default": false
   },
   {
+    "name": "DeepL",
+    "id": "DeepL.DeepL",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Deezer",
+    "id": "Deezer.Deezer",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
     "name": "ONLYOFFICE Desktop Editors",
     "id": "ONLYOFFICE.DesktopEditors",
     "category": "Bureautique",
@@ -534,6 +546,12 @@
     "default": false
   },
   {
+    "name": "Datadog Agent",
+    "id": "Datadog.Agent",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "Dashlane",
     "id": "Dashlane.Dashlane",
     "category": "Sécurité",
@@ -700,6 +718,24 @@
   {
     "name": "Visual Studio Code",
     "id": "Microsoft.VisualStudioCode",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "DataGrip",
+    "id": "JetBrains.DataGrip",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Debian WSL",
+    "id": "Debian.Debian",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "DataSpell",
+    "id": "JetBrains.DataSpell",
     "category": "Dev",
     "default": false
   },
