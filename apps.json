@@ -534,6 +534,24 @@
     "default": false
   },
   {
+    "name": "DNS Proxy",
+    "id": "AdGuard.dnsproxy",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "DNSControl",
+    "id": "StackExchange.DNSControl",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "dnSpy",
+    "id": "dnSpyEx.dnSpy",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "Caddy",
     "id": "CaddyServer.Caddy",
     "category": "Sécurité",
