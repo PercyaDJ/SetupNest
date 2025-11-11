@@ -944,6 +944,18 @@
     "default": false
   },
   {
+    "name": "Docker CLI",
+    "id": "Docker.DockerCLI",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Docker Compose",
+    "id": "Docker.DockerCompose",
+    "category": "Dev",
+    "default": false
+  },
+  {
     "name": "Python 3.14",
     "id": "Python.Python.3.14",
     "category": "Dev",
