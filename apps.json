@@ -12,6 +12,12 @@
     "default": false
   },
   {
+    "name": "AI Shell",
+    "id": "Microsoft.AIShell",
+    "category": "IA",
+    "default": false
+  },
+  {
     "name": "Ollama",
     "id": "Ollama.Ollama",
     "category": "IA",
@@ -214,6 +220,42 @@
     "default": false
   },
   {
+    "name": "Asana",
+    "id": "Asana.Asana",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Audio Waveform Image Generator",
+    "id": "BBC.audiowaveform",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Amazon Kindle",
+    "id": "Amazon.Kindle",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "AnyDesk",
+    "id": "AnyDesk.AnyDesk",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Antutu Benchmark",
+    "id": "Antutu.AntutuBenchmark",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Amazon Send to Kindle",
+    "id": "Amazon.SendToKindle",
+    "category": "Outils",
+    "default": false
+  },
+  {
     "name": "WinRAR",
     "id": "RARLab.WinRAR",
     "category": "Outils",
@@ -318,6 +360,24 @@
     "default": false
   },
   {
+    "name": "AnyToISO",
+    "id": "CrystalIDEASoftware.AnyToISO",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "AdGuard",
+    "id": "AdGuard.AdGuard",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "AdGuard Home",
+    "id": "AdGuard.AdGuardHome",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "CyberHive Connect",
     "id": "CyberHive.Connect",
     "category": "Sécurité",
@@ -342,6 +402,18 @@
     "default": false
   },
   {
+    "name": "AuthPass",
+    "id": "Authpass.Authpass",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Autopsy",
+    "id": "SleuthKit.Autopsy",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "KeePass",
     "id": "DominikReichl.KeePass",
     "category": "Sécurité",
@@ -354,6 +426,12 @@
     "default": false
   },
   {
+    "name": "1Password",
+    "id": "AgileBits.1Password",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "NordPass",
     "id": "NordSecurity.NordPass",
     "category": "Sécurité",
@@ -362,6 +440,12 @@
   {
     "name": "ProtonVPN",
     "id": "Proton.ProtonVPN",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "AmneziaVPN",
+    "id": "AmneziaVPN.AmneziaVPN",
     "category": "Sécurité",
     "default": false
   },
@@ -405,6 +489,12 @@
   {
     "name": "Adobe Creative Cloud",
     "id": "Adobe.CreativeCloud",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "AlterPhoto",
+    "id": "AlterPhoto.AlterPhoto",
     "category": "Création",
     "default": false
   },
@@ -472,6 +562,30 @@
   {
     "name": "Visual Studio Code",
     "id": "Microsoft.VisualStudioCode",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Arduino CLI",
+    "id": "ArduinoSA.CLI",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Arduino IDE",
+    "id": "ArduinoSA.IDE.stable",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Android Studio",
+    "id": "Google.AndroidStudio",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Anaconda 3",
+    "id": "Anaconda.Anaconda3",
     "category": "Dev",
     "default": false
   },
@@ -628,8 +742,26 @@
     "default": false
   },
   {
+    "name": "AWS VPN Client",
+    "id": "Amazon.AWSVPNClient",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "AWS Copilot CLI",
+    "id": "Amazon.CopilotCLI",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
     "name": "Microsoft Azure CLI",
     "id": "Microsoft.AzureCLI",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Microsoft Azure Data Studio",
+    "id": "Microsoft.AzureDataStudio",
     "category": "Cloud & Sync",
     "default": false
   },
