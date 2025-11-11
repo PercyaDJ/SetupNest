@@ -121,6 +121,18 @@
     "default": false
   },
   {
+    "name": "Logitech G HUB",
+    "id": "Logitech.GHUB",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Corsair iCUE5 Software",
+    "id": "Corsair.iCUE.5",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
     "name": "SumatraPDF",
     "id": "SumatraPDF.SumatraPDF",
     "category": "Bureautique",
@@ -129,6 +141,12 @@
   {
     "name": "Bambu Lab Studio",
     "id": "Bambulab.Bambustudio",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Creality Print",
+    "id": "Creality.CrealityPrint",
     "category": "Bureautique",
     "default": false
   },
@@ -370,12 +388,6 @@
     "default": false
   },
   {
-    "name": "Logitech G HUB",
-    "id": "Logitech.GHUB",
-    "category": "Outils",
-    "default": false
-  },
-  {
     "name": "Calibre",
     "id": "calibre.calibre",
     "category": "Outils",
@@ -404,6 +416,24 @@
   {
     "name": "Malwarebytes",
     "id": "Malwarebytes.Malwarebytes",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "CrowdSec Agent",
+    "id": "CrowdSecurity.CrowdSec",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "CrowdSec Windows Firewall Bouncer",
+    "id": "CrowdSecurity.CrowdSecWindowsFirewallBouncer",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Cloudflare WARP",
+    "id": "Cloudflare.Warp",
     "category": "Sécurité",
     "default": false
   },
@@ -524,6 +554,12 @@
   {
     "name": "ProtonVPN",
     "id": "Proton.ProtonVPN",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "CyberGhost VPN",
+    "id": "CyberGhost.CyberGhost",
     "category": "Sécurité",
     "default": false
   },
@@ -652,6 +688,18 @@
   {
     "name": "Visual Studio Code",
     "id": "Microsoft.VisualStudioCode",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "Cygwin",
+    "id": "Cygwin.Cygwin",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "CLion",
+    "id": "JetBrains.CLion",
     "category": "Dev",
     "default": false
   },
@@ -795,6 +843,12 @@
     "default": false
   },
   {
+    "name": "CrewLink",
+    "id": "Ottomated.CrewLink",
+    "category": "Jeux",
+    "default": false
+  },
+  {
     "name": "Epic Games Launcher",
     "id": "EpicGames.EpicGamesLauncher",
     "category": "Jeux",
@@ -822,6 +876,12 @@
   {
     "name": "Dropbox",
     "id": "Dropbox.Dropbox",
+    "category": "Cloud & Sync",
+    "default": false
+  },
+  {
+    "name": "Cozy Drive",
+    "id": "CozyCloud.CozyDrive",
     "category": "Cloud & Sync",
     "default": false
   },
