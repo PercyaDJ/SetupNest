@@ -2,7 +2,7 @@
 param()
 
 # ========= REGLAGES =========
-$RepoUrl = "https://github.com/PercyaDJ/SetupNest"   # <- remplace par l'URL du repo
+$RepoUrl = "https://github.com/PercyaDJ/SetupNest"
 
 # ========= GARDE STA (pas de relance automatique) =========
 # Si pas en STA, on explique et on sort proprement.
