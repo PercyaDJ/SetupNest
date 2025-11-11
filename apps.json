@@ -115,6 +115,18 @@
     "default": false
   },
   {
+    "name": "KDE Dolphin",
+    "id": "KDE.Dolphin",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
+    "name": "Draw.io",
+    "id": "JGraph.Draw",
+    "category": "Bureautique",
+    "default": false
+  },
+  {
     "name": "Docusign PKI",
     "id": "DocuSign.DocusignPKI",
     "category": "Bureautique",
