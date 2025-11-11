@@ -679,6 +679,30 @@
     "default": false
   },
   {
+    "name": "DJI Assistant 2",
+    "id": "DJI.DJIAssistant2",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "DJI Assistant 2 (Enterprise Series)",
+    "id": "DJI.DJIAssistant2.Enterprise Series",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "DJI Assistant 2 (DJI FPV series)",
+    "id": "DJI.DJIAssistant2.FPV",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "DJI Terra",
+    "id": "DJI.DJITerra",
+    "category": "Création",
+    "default": false
+  },
+  {
     "name": "Darktable",
     "id": "darktable.darktable",
     "category": "Création",
