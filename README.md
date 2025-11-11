@@ -94,7 +94,7 @@ ou télécharger le ZIP depuis GitHub et extraire.
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-### 3) Lancer l’application
+### 3) Lancer l’application en admin
 ```powershell
 .\install-gui.ps1
 ```
@@ -105,11 +105,13 @@ ou double‑cliquer sur `start-SetupNest.cmd` si présent.
 ## Utilisation
 
 1. Déplie une catégorie ▸ et coche les applis à traiter.  
-   *Astuce* : cocher une catégorie coche toutes ses applis.
+   - Cocher une catégorie coche toutes ses applis.
+   - Barre de recherche avec nom d'application **ET** ID.
+   - État des applications déjà présentes avec [Inst.] et à mettre à jour via "Tout mettre à jour" avec [Upd.]
 2. Choisis une action :
    - Installer la sélection : installe ce qui manque.
    - Mettre à jour la sélection : update ciblé des applis cochées *déjà installées*.
-   - Mettre à jour TOUT : update global (`winget upgrade --all`).
+   - Tout mettre à jour : update global (`winget upgrade --all`).
    - Désinstaller la sélection : désinstalle les applis cochées *déjà installées*.
    - Exporter sélection (JSON) : sauvegarde les apps cochées dans un fichier JSON.
    - Importer sélection (JSON) : coche automatiquement les apps dont l’ID figure dans le JSON.
