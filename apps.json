@@ -534,6 +534,12 @@
     "default": false
   },
   {
+    "name": "Dashlane",
+    "id": "Dashlane.Dashlane",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "KeePassXC",
     "id": "KeePassXCTeam.KeePassXC",
     "category": "Sécurité",
@@ -609,6 +615,12 @@
   {
     "name": "Adobe Creative Cloud",
     "id": "Adobe.CreativeCloud",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "Darktable",
+    "id": "darktable.darktable",
     "category": "Création",
     "default": false
   },
