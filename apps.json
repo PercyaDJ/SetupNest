@@ -170,6 +170,12 @@
     "default": false
   },
   {
+    "name": "Cisco Jabber",
+    "id": "Cisco.Jabber",
+    "category": "Communication",
+    "default": false
+  },
+  {
     "name": "Slack",
     "id": "SlackTechnologies.Slack",
     "category": "Communication",
@@ -219,6 +225,12 @@
     "default": false
   },
   {
+    "name": "Clementine",
+    "id": "Clementine.Clementine",
+    "category": "Multimédia",
+    "default": false
+  },
+  {
     "name": "OBS Studio",
     "id": "OBSProject.OBSStudio",
     "category": "Multimédia",
@@ -234,6 +246,12 @@
   {
     "name": "7-Zip",
     "id": "7zip.7zip",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Chocolatey GUI",
+    "id": "Chocolatey.ChocolateyGUI",
     "category": "Outils",
     "default": false
   },
@@ -270,6 +288,12 @@
   {
     "name": "Antutu Benchmark",
     "id": "Antutu.AntutuBenchmark",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "Cinebench R23",
+    "id": "Maxon.CinebenchR23",
     "category": "Outils",
     "default": false
   },
@@ -384,6 +408,30 @@
     "default": false
   },
   {
+    "name": "Citrix Workspace",
+    "id": "Citrix.Workspace",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "ClamAV",
+    "id": "Cisco.ClamAV",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Certbot",
+    "id": "EFF.Certbot",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Certify One",
+    "id": "FireDaemon.CertifyOne",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
     "name": "AnyToISO",
     "id": "CrystalIDEASoftware.AnyToISO",
     "category": "Sécurité",
@@ -398,6 +446,12 @@
   {
     "name": "AdGuard",
     "id": "AdGuard.AdGuard",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Caddy",
+    "id": "CaddyServer.Caddy",
     "category": "Sécurité",
     "default": false
   },
@@ -537,6 +591,12 @@
   {
     "name": "Canva",
     "id": "Canva.Canva",
+    "category": "Création",
+    "default": false
+  },
+  {
+    "name": "CapCut",
+    "id": "ByteDance.CapCut",
     "category": "Création",
     "default": false
   },
