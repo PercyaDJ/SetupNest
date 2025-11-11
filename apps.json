@@ -280,6 +280,48 @@
     "default": false
   },
   {
+    "name": "Dell Display Manager",
+    "id": "Dell.DisplayManager",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals Linux Recovery",
+    "id": "DiskInternals.LinuxRecovery",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals Linux Reader",
+    "id": "DiskInternals.LinuxReader",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals CD-DVD Recovery",
+    "id": "DiskInternals.CD-DVDRecovery",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals Uneraser",
+    "id": "DiskInternals.Uneraser",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals Recovery Server",
+    "id": "DiskInternals.RecoveryServer",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "DiskInternals Video Recovery",
+    "id": "DiskInternals.VideoRecovery",
+    "category": "Outils",
+    "default": false
+  },
+  {
     "name": "Chocolatey GUI",
     "id": "Chocolatey.ChocolateyGUI",
     "category": "Outils",
@@ -736,6 +778,12 @@
   {
     "name": "DataSpell",
     "id": "JetBrains.DataSpell",
+    "category": "Dev",
+    "default": false
+  },
+  {
+    "name": "DevToys",
+    "id": "DevToys-app.DevToys",
     "category": "Dev",
     "default": false
   },
