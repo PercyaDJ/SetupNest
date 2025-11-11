@@ -36,6 +36,12 @@
     "default": false
   },
   {
+    "name": "Backyard AI",
+    "id": "AhoyLabs.BackyardAI",
+    "category": "IA",
+    "default": false
+  },
+  {
     "name": "Cursor",
     "id": "Anysphere.Cursor",
     "category": "IA",
@@ -120,10 +126,22 @@
     "category": "Bureautique",
     "default": false
   },
+  {
+    "name": "Bambu Lab Studio",
+    "id": "Bambulab.Bambustudio",
+    "category": "Bureautique",
+    "default": false
+  },
 
   {
     "name": "Mozilla Thunderbird",
     "id": "Mozilla.Thunderbird",
+    "category": "Communication",
+    "default": false
+  },
+  {
+    "name": "Betterbird",
+    "id": "Betterbird.Betterbird",
     "category": "Communication",
     "default": false
   },
@@ -216,6 +234,12 @@
   {
     "name": "7-Zip",
     "id": "7zip.7zip",
+    "category": "Outils",
+    "default": false
+  },
+  {
+    "name": "BalenaEtcher ",
+    "id": "Balena.Etcher",
     "category": "Outils",
     "default": false
   },
@@ -362,6 +386,12 @@
   {
     "name": "AnyToISO",
     "id": "CrystalIDEASoftware.AnyToISO",
+    "category": "Sécurité",
+    "default": false
+  },
+  {
+    "name": "Binary Ninja",
+    "id": "Vector35.BinaryNinja",
     "category": "Sécurité",
     "default": false
   },
