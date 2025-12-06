@@ -501,7 +501,36 @@ $btnInstall       = NewBtn "Installer la selection"
 $btnUpdateSel     = NewBtn "Mettre a jour"
 $btnUpdateAll     = NewBtn "Tout Mettre a jour"
 $btnUninstallSel  = NewBtn "Desinstaller"
-$flowRight.Controls.AddRange(@($btnInstall,$btnUpdateSel,$btnUpdateAll,$btnUninstallSel))
+$btnShortcut      = NewBtn "Creer raccourci bureau" # NOUVEAU
+$flowRight.Controls.AddRange(@($btnInstall,$btnUpdateSel,$btnUpdateAll,$btnUninstallSel,$btnShortcut))
+
+$btnShortcut.Add_Click({
+    try {
+        $WshShell = New-Object -ComObject WScript.Shell
+        $DesktopPath = $WshShell.SpecialFolders.Item("Desktop")
+        $ShortcutFile = Join-Path $DesktopPath "SetupNest.lnk"
+        $Shortcut = $WshShell.CreateShortcut($ShortcutFile)
+        # Point to current executable
+        $Shortcut.TargetPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+        # If we are in PS script mode (not exe), protect against pointing to powershell.exe
+        if ($Shortcut.TargetPath -match "powershell") {
+            $Shortcut.TargetPath = Join-Path $PSScriptRoot "start-SetupNest.cmd"
+            if (-not (Test-Path $Shortcut.TargetPath)) { 
+                # Fallback
+                $Shortcut.TargetPath = $PSCommandPath
+            }
+            $Shortcut.IconLocation = "$PSScriptRoot\logo.ico"
+        } else {
+            # In EXE mode, the EXE itself has the icon
+            $Shortcut.IconLocation = $Shortcut.TargetPath
+        }
+        $Shortcut.Description = "SetupNest - Installateur d'applications"
+        $Shortcut.Save()
+        [System.Windows.Forms.MessageBox]::Show("Raccourci cree sur le bureau !", "Succes", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+    } catch {
+        [System.Windows.Forms.MessageBox]::Show("Erreur creation raccourci : " + $_.Exception.Message, "Erreur", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+    }
+})
 
 # ===== StatusStrip + Progress =====
 $status = New-Object System.Windows.Forms.StatusStrip

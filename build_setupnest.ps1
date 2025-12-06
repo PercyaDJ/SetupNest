@@ -133,8 +133,7 @@ $compileArgs = @(
 )
 
 if (Test-Path $ICON_PATH) {
-    # $compileArgs += "/win32icon:$ICON_PATH"
-    Write-Warning "Icon embedding temporarily disabled due to format issues."
+    $compileArgs += "/win32icon:$ICON_PATH"
 } else {
     Write-Warning "Icon not found, skipping."
 }
