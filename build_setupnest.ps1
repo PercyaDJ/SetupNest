@@ -24,6 +24,17 @@ $scriptContent = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes((Join-
 
 Write-Host ">>> Compiling C# Wrapper..." -ForegroundColor Cyan
 
+# Chunking logic for C# string literal limit (~65k)
+$chunks = @()
+$offset = 0
+$chunkSize = 32768 # Safe limit
+while ($offset -lt $scriptContent.Length) {
+    $len = [Math]::Min($chunkSize, $scriptContent.Length - $offset)
+    $chunks += '"' + $scriptContent.Substring($offset, $len) + '"'
+    $offset += $len
+}
+$concatenatedScript = $chunks -join " + `r`n        "
+
 $csharpSource = @"
 using System;
 using System.Diagnostics;
@@ -35,7 +46,8 @@ namespace SetupNestLauncher
     class Program
     {
         // Embedded Base64 Script
-        static string Base64Script = "$scriptContent";
+        static string Base64Script = 
+        $concatenatedScript;
 
         static void Main(string[] args)
         {
@@ -54,11 +66,7 @@ namespace SetupNestLauncher
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.FileName = "powershell.exe";
                 psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -STA -File \"" + scriptFile + "\"";
-                psi.UseShellExecute = false; // Required to not open new window if we want redirect, but here we WANT window? 
-                // Actually user said: "ne se quitte pas...". PS script handles that.
-                // We want the console window to be HIDDEN, only GUI visible? 
-                // Or user likes console output? "je veux que l'appli se ferme pas quand elle execute wingets". 
-                // The GUI does the work. The console is distracting. Let's hide it.
+                psi.UseShellExecute = false; 
                 psi.WindowStyle = ProcessWindowStyle.Hidden; 
                 psi.CreateNoWindow = true;
 
@@ -71,10 +79,7 @@ namespace SetupNestLauncher
             catch (Exception ex)
             {
                 // Simple error dialog if things go really wrong
-                string msg = "Error launching SetupNest: " + ex.Message;
-                // No GUI lib referenced by default in console app template, console write
-                // But we are hidden. 
-                // We'll rely on global catch.
+                // No GUI lib referenced by default in console app template
             }
         }
     }
@@ -145,6 +150,9 @@ if ($p.ExitCode -ne 0) { throw "Compilation failed." }
 Remove-Item $srcFile
 
 Write-Host ">>> Signing EXE..." -ForegroundColor Cyan
+
+# Wait a bit for file handle release / AV scan
+Start-Sleep -Seconds 2
 
 # Create Cert if missing
 $certName = "SetupNest Jolan"
