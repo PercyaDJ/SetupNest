@@ -96,13 +96,24 @@ function Invoke-WingetStreaming {
     $null = $p.Start()
     $p.BeginOutputReadLine()
     $p.BeginErrorReadLine()
+    
+    # Boucle d'attente non bloquante pour garder l'UI vivante et afficher les logs en temps réel
+    while (-not $p.HasExited) {
+        [System.Windows.Forms.Application]::DoEvents()
+        Start-Sleep -Milliseconds 50
+    }
+    # Au cas où
     $p.WaitForExit()
     return $p.ExitCode
 }
 
+# Fonction optimisée utilisant le cache si possible, sinon fallback
 function Winget-IsInstalled { param([string]$Id)
+    if ($script:InstalledIds.ContainsKey($Id)) { return $true }
+    # Fallback lent si cache pas prêt (rare)
     winget list --id $Id --accept-source-agreements | Select-String $Id -Quiet
 }
+
 function Winget-Install {
     param(
         [string]$Id,
@@ -149,17 +160,19 @@ function Load-AppsConfig {
 
 # ========= LOG UI =========
 function Add-LogLineSafe { param([System.Windows.Forms.TextBox]$LogBox,[string]$Line)
-    if ($LogBox.InvokeRequired) {
-        $null = $LogBox.BeginInvoke([Action]{
+    try {
+        if ($LogBox.InvokeRequired) {
+            $null = $LogBox.BeginInvoke([Action]{
+                $LogBox.AppendText($Line + "`r`n")
+                $LogBox.SelectionStart = $LogBox.Text.Length
+                $LogBox.ScrollToCaret()
+            })
+        } else {
             $LogBox.AppendText($Line + "`r`n")
             $LogBox.SelectionStart = $LogBox.Text.Length
             $LogBox.ScrollToCaret()
-        })
-    } else {
-        $LogBox.AppendText($Line + "`r`n")
-        $LogBox.SelectionStart = $LogBox.Text.Length
-        $LogBox.ScrollToCaret()
-    }
+        }
+    } catch {}
 }
 function Write-UILog { param([System.Windows.Forms.TextBox]$LogBox,[string]$Message)
     Add-LogLineSafe -LogBox $LogBox -Line $Message
@@ -177,7 +190,8 @@ function Install-App {
     if ($App.PSObject.Properties.Name -contains 'scope') { $scope = [string]$App.scope }
 
     Write-UILog $LogBox "=== INSTALL: $name ($id) ==="
-    if (Winget-IsInstalled -Id $id) { Write-UILog $LogBox "Deja installe, ignore."; Write-UILog $LogBox ""; return }
+    # Optim: check cache
+    if ($script:InstalledIds.ContainsKey($id)) { Write-UILog $LogBox "Deja installe, ignore."; Write-UILog $LogBox ""; return }
 
     try {
         Set-Status "Installation: $name" $true
@@ -191,7 +205,8 @@ function Install-App {
 function Update-App { param([pscustomobject]$App,[System.Windows.Forms.TextBox]$LogBox)
     $name=$App.name; $id=$App.id
     Write-UILog $LogBox "=== UPDATE: $name ($id) ==="
-    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installe -> rien a mettre a jour."; Write-UILog $LogBox ""; return }
+    # Optim: Check cache
+    if (-not $script:InstalledIds.ContainsKey($id)) { Write-UILog $LogBox "Non installe -> rien a mettre a jour."; Write-UILog $LogBox ""; return }
     try { Set-Status "Mise a jour: $name" $true; Winget-UpgradeId -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
     catch { Write-UILog $LogBox ("Erreur mise a jour : {0}" -f $_.Exception.Message) }
     Write-UILog $LogBox ""
@@ -199,7 +214,8 @@ function Update-App { param([pscustomobject]$App,[System.Windows.Forms.TextBox]$
 function Uninstall-App { param([pscustomobject]$App,[System.Windows.Forms.TextBox]$LogBox)
     $name=$App.name; $id=$App.id
     Write-UILog $LogBox "=== UNINSTALL: $name ($id) ==="
-    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installe -> rien a desinstaller."; Write-UILog $LogBox ""; return }
+    # Optim: check cache
+    if (-not $script:InstalledIds.ContainsKey($id)) { Write-UILog $LogBox "Non installe -> rien a desinstaller."; Write-UILog $LogBox ""; return }
     try { Set-Status "Desinstallation: $name" $true; Winget-Uninstall -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
     catch { Write-UILog $LogBox ("Erreur desinstallation : {0}" -f $_.Exception.Message) }
     Write-UILog $LogBox ""
@@ -276,12 +292,25 @@ function Refresh-AppState {
 
 # ========= UI =========
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "SetupNest - Installateur win-get (Optimise)"
+$form.Text = "SetupNest - Installateur win-get"
 $form.Size = [System.Drawing.Size]::new(1100, 700)
 $form.MinimumSize = [System.Drawing.Size]::new(960, 560)
 $form.StartPosition = "CenterScreen"
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $form.AutoScaleMode = 'Dpi'
+
+# Icone du projet
+try {
+    $iconUrl  = "$RepoUrl/raw/main/logo.ico"
+    $iconPath = Join-Path $env:TEMP "SetupNest-Logo.ico"
+    # On télécharge si absent ou vieux (> 1 jour ? non simple check existence pour perf)
+    if (-not (Test-Path $iconPath)) {
+        Invoke-WebRequest $iconUrl -OutFile $iconPath -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $iconPath) {
+        $form.Icon = [System.Drawing.Icon]::new($iconPath)
+    }
+} catch {}
 
 # Layout global
 $layout = New-Object System.Windows.Forms.TableLayoutPanel
