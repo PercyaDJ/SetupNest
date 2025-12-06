@@ -138,12 +138,21 @@ function Winget-Uninstall  { param([string]$Id,[System.Windows.Forms.TextBox]$Lo
 # ========= CONFIG =========
 function Load-AppsConfig {
     $configPath = Join-Path $PSScriptRoot "apps.json"
+    
+    # Auto-download si absent (Mode Portable/EXE)
     if (-not (Test-Path $configPath)) {
-        [System.Windows.Forms.MessageBox]::Show(("Fichier apps.json introuvable.`n`nAttendu : {0}" -f $configPath),
-            "Erreur - config manquante",[System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null
-        exit 1
+        try {
+            # On tente de le récupérer depuis le repo
+            $url = "$RepoUrl/raw/main/apps.json"
+            Invoke-WebRequest $url -OutFile $configPath -ErrorAction Stop
+        } catch {
+            [System.Windows.Forms.MessageBox]::Show(("Fichier apps.json introuvable et impossible à télécharger.`n`nUrl : {0}`nErreur : {1}" -f $url, $_.Exception.Message),
+                "Erreur - Config manquante",[System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null
+            exit 1
+        }
     }
+
     try {
         $utf8 = New-Object System.Text.UTF8Encoding($false)
         $raw  = [System.IO.File]::ReadAllText($configPath, $utf8)
