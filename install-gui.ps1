@@ -177,7 +177,7 @@ function Install-App {
     if ($App.PSObject.Properties.Name -contains 'scope') { $scope = [string]$App.scope }
 
     Write-UILog $LogBox "=== INSTALL: $name ($id) ==="
-    if (Winget-IsInstalled -Id $id) { Write-UILog $LogBox "Deja installe, ignore."; Write-UILog $LogBox ""; return }
+    if (Winget-IsInstalled -Id $id) { Write-UILog $LogBox "Déjà installé, ignoré."; Write-UILog $LogBox ""; return }
 
     try {
         Set-Status "Installation: $name" $true
@@ -191,17 +191,17 @@ function Install-App {
 function Update-App { param([pscustomobject]$App,[System.Windows.Forms.TextBox]$LogBox)
     $name=$App.name; $id=$App.id
     Write-UILog $LogBox "=== UPDATE: $name ($id) ==="
-    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installe -> rien a mettre a jour."; Write-UILog $LogBox ""; return }
-    try { Set-Status "Mise a jour: $name" $true; Winget-UpgradeId -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
-    catch { Write-UILog $LogBox ("Erreur mise a jour : {0}" -f $_.Exception.Message) }
+    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installé -> rien à mettre à jour."; Write-UILog $LogBox ""; return }
+    try { Set-Status "Mise à jour: $name" $true; Winget-UpgradeId -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
+    catch { Write-UILog $LogBox ("Erreur mise à jour : {0}" -f $_.Exception.Message) }
     Write-UILog $LogBox ""
 }
 function Uninstall-App { param([pscustomobject]$App,[System.Windows.Forms.TextBox]$LogBox)
     $name=$App.name; $id=$App.id
     Write-UILog $LogBox "=== UNINSTALL: $name ($id) ==="
-    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installe -> rien a desinstaller."; Write-UILog $LogBox ""; return }
-    try { Set-Status "Desinstallation: $name" $true; Winget-Uninstall -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
-    catch { Write-UILog $LogBox ("Erreur desinstallation : {0}" -f $_.Exception.Message) }
+    if (-not (Winget-IsInstalled -Id $id)) { Write-UILog $LogBox "Non installé -> rien à désinstaller."; Write-UILog $LogBox ""; return }
+    try { Set-Status "Désinstallation: $name" $true; Winget-Uninstall -Id $id -LogBox $LogBox; Set-Status "OK: $name"; }
+    catch { Write-UILog $LogBox ("Erreur désinstallation : {0}" -f $_.Exception.Message) }
     Write-UILog $LogBox ""
 }
 
@@ -215,43 +215,68 @@ foreach ($app in $apps) {
 }
 $script:AppsMaster = $apps
 
-# Etats installes / upgradables
+# Etats installés / upgradables
 $script:InstalledIds  = @{}
 $script:UpgradableIds = @{}
 
 function Refresh-AppState {
     param([System.Windows.Forms.TextBox]$LogBox)
-    Set-Status "Scan etat applications" $true
+    
+    $start = Get-Date
+    Set-Status "Scan état applications..." $true
+    
+    # Reset
     $script:InstalledIds  = @{}
     $script:UpgradableIds = @{}
+
     try {
-        # Liste installees
-        $ids = ($script:AppsMaster | ForEach-Object { $_.id }) | Sort-Object -Unique
-        $listOut = winget list --accept-source-agreements 2>$null
-        foreach ($line in $listOut) {
-            foreach ($id in $ids) {
-                if ([string]::IsNullOrWhiteSpace($id)) { continue }
-                if ($line -like "*$id*") { $script:InstalledIds[$id] = $true }
+        # --- 1. Scan des applications installées ---
+        Write-UILog $LogBox "Scan des applications installées (winget list)..."
+        [System.Windows.Forms.Application]::DoEvents()
+
+        # On utilise une astuce pour aller plus vite : pas de draw de colonnes trop complexe, juste récup raw
+        $listOut = winget list --accept-source-agreements --disable-interactivity 2>$null
+        
+        $allOutput = $listOut -join "`n"
+        
+        # Pour CHAQUE App de notre catalogue, vérifier si son ID est présent
+        foreach ($app in $script:AppsMaster) {
+            $id = $app.id
+            if ($allOutput.Contains($id)) {
+                 $script:InstalledIds[$id] = $true
             }
         }
-        # Liste upgradables
-        $upOut = winget upgrade --accept-source-agreements 2>$null
-        foreach ($line in $upOut) {
-            foreach ($id in $ids) {
-                if ([string]::IsNullOrWhiteSpace($id)) { continue }
-                if ($line -like "*$id*") { $script:UpgradableIds[$id] = $true }
+        
+        # --- 2. Scan des mises à jour ---
+        Write-UILog $LogBox "Vérification des mises à jour (winget upgrade)..."
+        [System.Windows.Forms.Application]::DoEvents()
+        
+        $upOut = winget upgrade --accept-source-agreements --disable-interactivity 2>$null
+        $allUpOutput = $upOut -join "`n"
+        
+        foreach ($app in $script:AppsMaster) {
+            $id = $app.id
+            if ($script:InstalledIds.ContainsKey($id)) {
+               # Si installé, on vérifie si update dispo
+               if ($allUpOutput.Contains($id)) {
+                   $script:UpgradableIds[$id] = $true
+               }
             }
         }
-        Write-UILog $LogBox ("Etat: {0} installees, {1} upgradables" -f $script:InstalledIds.Count, $script:UpgradableIds.Count)
+
+        $duration = (Get-Date) - $start
+        Write-UILog $LogBox ("Scan terminé en {0:N1}s. {1} installées, {2} updates dispos." -f $duration.TotalSeconds, $script:InstalledIds.Count, $script:UpgradableIds.Count)
+        
     } catch {
-        Write-UILog $LogBox ("Erreur scan etat : {0}" -f $_.Exception.Message)
+        Write-UILog $LogBox ("Erreur critique durant le scan : {0}" -f $_.Exception.Message)
     }
-    Set-Status "Pret" $false
+    
+    Set-Status "Prêt" $false
 }
 
 # ========= UI =========
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "SetupNest - Installateur winget (GUI)"
+$form.Text = "SetupNest - Installateur win-get (Optimisé)"
 $form.Size = [System.Drawing.Size]::new(1100, 700)
 $form.MinimumSize = [System.Drawing.Size]::new(960, 560)
 $form.StartPosition = "CenterScreen"
@@ -282,7 +307,8 @@ $csHeaderRight = New-Object System.Windows.Forms.ColumnStyle([System.Windows.For
 $layout.Controls.Add($header, 0, 0)
 
 $lbl = New-Object System.Windows.Forms.Label
-$lbl.Text = "Categories -> coche les applis a traiter :"
+$lbl.Text = "Sélectionnez les applications à installer ou mettre à jour :"
+$lbl.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
 $lbl.AutoSize = $true
 $lbl.Anchor = 'Left'
 $header.Controls.Add($lbl, 0, 0)
@@ -317,9 +343,9 @@ $hdrBtns.Anchor        = 'Right'
 $hdrRight.Controls.Add($hdrBtns, 0, 1)
 
 $btnClear    = New-Object System.Windows.Forms.Button; $btnClear.Text    = "Effacer";        $btnClear.AutoSize = $true
-$btnExpand   = New-Object System.Windows.Forms.Button; $btnExpand.Text   = "Deplier tout";   $btnExpand.AutoSize = $true
+$btnExpand   = New-Object System.Windows.Forms.Button; $btnExpand.Text   = "Déplier tout";   $btnExpand.AutoSize = $true
 $btnCollapse = New-Object System.Windows.Forms.Button; $btnCollapse.Text = "Replier tout";   $btnCollapse.AutoSize = $true
-$btnRefresh  = New-Object System.Windows.Forms.Button; $btnRefresh.Text  = "Rafraichir etat";$btnRefresh.AutoSize = $true
+$btnRefresh  = New-Object System.Windows.Forms.Button; $btnRefresh.Text  = "Rafraichir";     $btnRefresh.AutoSize = $true
 $hdrBtns.Controls.AddRange(@($btnClear,$btnExpand,$btnCollapse,$btnRefresh))
 
 # Contenu
@@ -346,11 +372,11 @@ $tree.HideSelection = $false
 $tree.ShowLines = $true
 $tree.ShowPlusMinus = $true
 $tree.ShowRootLines = $true
-$tree.Font = $form.Font
+$tree.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $grpLeft.Controls.Add($tree)
 
 $grpRight = New-Object System.Windows.Forms.GroupBox
-$grpRight.Text = "Journal"
+$grpRight.Text = "Journal d'exécution"
 $grpRight.Dock = 'Fill'
 $grpRight.Padding = [System.Windows.Forms.Padding]::new(8,18,8,8)
 $split.Panel2.Controls.Add($grpRight)
@@ -360,6 +386,8 @@ $logBox.Dock = 'Fill'
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
+$logBox.BackColor = [System.Drawing.Color]::FromArgb(30,30,30)
+$logBox.ForeColor = [System.Drawing.Color]::LightGray
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 10)
 $grpRight.Controls.Add($logBox)
 
@@ -375,10 +403,10 @@ function Get-ValidSplitDistance([System.Windows.Forms.Control]$c,[int]$p1Min,[in
     return $desired
 }
 $form.Add_Shown({
-    $p1Min = 320; $p2Min = 360
+    $p1Min = 350; $p2Min = 360
     $split.Panel1MinSize = $p1Min
     $split.Panel2MinSize = $p2Min
-    $split.SplitterWidth  = 5
+    $split.SplitterWidth  = 6
     $split.SplitterDistance = Get-ValidSplitDistance $contentPad $p1Min $p2Min 0.55
 })
 $form.Add_Resize({
@@ -419,7 +447,7 @@ $flowLeft.AutoSizeMode = 'GrowAndShrink'
 $bottom.Controls.Add($flowLeft, 0, 0)
 
 $btnCheckAll      = NewBtn "Tout cocher"
-$btnUncheckAll    = NewBtn "Tout decocher"
+$btnUncheckAll    = NewBtn "Tout décocher"
 $flowLeft.Controls.AddRange(@($btnCheckAll,$btnUncheckAll))
 
 $flowRight = New-Object System.Windows.Forms.FlowLayoutPanel
@@ -431,13 +459,10 @@ $flowRight.FlowDirection = 'LeftToRight'
 $flowRight.Anchor = 'Right'
 $bottom.Controls.Add($flowRight, 1, 0)
 
-$btnInstall       = NewBtn "Installer la selection"
-$btnUpdateSel     = NewBtn "Mettre a jour la selection"
-$btnUpdateAll     = NewBtn "Tout mettre a jour"
-$btnUninstallSel  = NewBtn "Desinstaller la selection"
-$btnExportSel     = $null  # hors scope ici
-$btnImportSel     = $null  # hors scope ici
-$btnClose         = $null  # hors scope ici
+$btnInstall       = NewBtn "Installer la sélection"
+$btnUpdateSel     = NewBtn "Mettre à jour"
+$btnUpdateAll     = NewBtn "Tout Mettre à jour"
+$btnUninstallSel  = NewBtn "Désinstaller"
 $flowRight.Controls.AddRange(@($btnInstall,$btnUpdateSel,$btnUpdateAll,$btnUninstallSel))
 
 # ===== StatusStrip + Progress =====
@@ -451,8 +476,15 @@ $status.Dock = 'Bottom'
 $form.Controls.Add($status)
 
 function Set-Status($text, [bool]$busy = $false) {
-    $lblStatus.Text = $text
-    if ($busy) { $prog.Visible = $true; $prog.Style = 'Marquee' } else { $prog.Visible = $false }
+    if ($status.InvokeRequired) {
+        $status.Invoke([Action]{ 
+            $lblStatus.Text = $text
+            if ($busy) { $prog.Visible = $true; $prog.Style = 'Marquee' } else { $prog.Visible = $false }
+        })
+    } else {
+        $lblStatus.Text = $text
+        if ($busy) { $prog.Visible = $true; $prog.Style = 'Marquee' } else { $prog.Visible = $false }
+    }
     [System.Windows.Forms.Application]::DoEvents()
 }
 
@@ -482,15 +514,29 @@ function Build-Tree { param([string]$FilterText = "")
 
         $cat = New-Object System.Windows.Forms.TreeNode
         $cat.Text = $g.Name
+        
         foreach ($app in ($children | Sort-Object name)) {
-            $prefix = ""
-            if ($script:InstalledIds.ContainsKey($app.id))  { $prefix += "[Inst.] " }
-            if ($script:UpgradableIds.ContainsKey($app.id)) { $prefix += "[Upd.] " }
-
+            $prefix = "     "
+            $state = "none"
+            
+            if ($script:InstalledIds.ContainsKey($app.id))  { 
+                 $prefix = "[OK] "
+                 $state = "installed"
+            }
+            if ($script:UpgradableIds.ContainsKey($app.id)) { 
+                 $prefix = "[MAJ] " 
+                 $state = "upgradable"
+            }
+            
             $n = New-Object System.Windows.Forms.TreeNode
             $n.Text = $prefix + $app.name
             $n.Tag  = $app
+            
+            if ($state -eq 'installed') { $n.ForeColor = [System.Drawing.Color]::DarkGreen }
+            if ($state -eq 'upgradable') { $n.ForeColor = [System.Drawing.Color]::DarkOrange }
+
             if ($app.default -eq $true -and $flt.Length -eq 0) { $n.Checked = $true }
+            
             [void]$cat.Nodes.Add($n)
             $added++
         }
@@ -499,7 +545,7 @@ function Build-Tree { param([string]$FilterText = "")
 
     if ($added -eq 0) {
         $hint = New-Object System.Windows.Forms.TreeNode
-        $hint.Text = "Aucun resultat. Proposer un ajout: $RepoUrl"
+        $hint.Text = "Aucun résultat. Code source: $RepoUrl"
         $hint.Tag  = @{ type = 'repo'; url = $RepoUrl }
         [void]$tree.Nodes.Add($hint)
         $tree.ExpandAll()
@@ -544,7 +590,7 @@ $btnClear.Add_Click({ $tbSearch.Text = ""; Build-Tree })
 $btnExpand.Add_Click({ $tree.ExpandAll() })
 $btnCollapse.Add_Click({ $tree.CollapseAll() })
 $btnRefresh.Add_Click({
-    Write-UILog $logBox "Rafraichissement de l'etat des applications..."
+    Write-UILog $logBox "Rafraichissement de l'état des applications..."
     Refresh-AppState -LogBox $logBox
     Build-Tree -FilterText ($tbSearch.Text)
 })
@@ -575,16 +621,16 @@ $btnUncheckAll.Add_Click({
 $btnInstall.Add_Click({
     $sel = Get-SelectedApps
     if($sel.Count -eq 0){
-        [System.Windows.Forms.MessageBox]::Show("Aucune application selectionnee.","Information",
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Information",
             [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
         return
     }
     $btnInstall.Enabled=$false
-    Set-Status "Installation de la selection" $true
-    Write-UILog $logBox "=== INSTALLATION de la selection ==="
+    Set-Status "Installation de la sélection..." $true
+    Write-UILog $logBox "=== INSTALLATION de la sélection ==="
     foreach($a in $sel){ Install-App -App $a -LogBox $logBox }
-    Set-Status "Pret" $false
-    Write-UILog $logBox "Installations terminees."
+    Set-Status "Prêt" $false
+    Write-UILog $logBox "Installations terminées."
     $btnInstall.Enabled=$true
     Refresh-AppState -LogBox $logBox
     Build-Tree -FilterText ($tbSearch.Text)
@@ -593,16 +639,16 @@ $btnInstall.Add_Click({
 $btnUpdateSel.Add_Click({
     $sel = Get-SelectedApps
     if($sel.Count -eq 0){
-        [System.Windows.Forms.MessageBox]::Show("Aucune application selectionnee.","Information",
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Information",
             [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
         return
     }
     $btnUpdateSel.Enabled=$false
-    Set-Status "Mise a jour de la selection" $true
-    Write-UILog $logBox "=== MISE A JOUR de la selection ==="
+    Set-Status "Mise à jour de la sélection..." $true
+    Write-UILog $logBox "=== MISE À JOUR de la sélection ==="
     foreach($a in $sel){ Update-App -App $a -LogBox $logBox }
-    Set-Status "Pret" $false
-    Write-UILog $logBox "Mises a jour effectuees (si disponibles)."
+    Set-Status "Prêt" $false
+    Write-UILog $logBox "Mises à jour effectuées (si disponibles)."
     $btnUpdateSel.Enabled=$true
     Refresh-AppState -LogBox $logBox
     Build-Tree -FilterText ($tbSearch.Text)
@@ -610,11 +656,11 @@ $btnUpdateSel.Add_Click({
 
 $btnUpdateAll.Add_Click({
     $btnUpdateAll.Enabled=$false
-    Set-Status "Mise a jour globale" $true
-    Write-UILog $logBox "=== MISE A JOUR DE TOUS LES PAQUETS DISPONIBLES ==="
-    try { Winget-UpgradeAll -LogBox $logBox; Write-UILog $logBox "Mise a jour globale terminee (si disponible)." }
+    Set-Status "Mise à jour globale (tous les paquets système)..." $true
+    Write-UILog $logBox "=== MISE À JOUR GLOBALE ==="
+    try { Winget-UpgradeAll -LogBox $logBox; Write-UILog $logBox "Mise à jour globale terminée." }
     catch { Write-UILog $logBox ("Erreur update all : {0}" -f $_.Exception.Message) }
-    Set-Status "Pret" $false
+    Set-Status "Prêt" $false
     $btnUpdateAll.Enabled=$true
     Refresh-AppState -LogBox $logBox
     Build-Tree -FilterText ($tbSearch.Text)
@@ -623,26 +669,33 @@ $btnUpdateAll.Add_Click({
 $btnUninstallSel.Add_Click({
     $sel = Get-SelectedApps
     if($sel.Count -eq 0){
-        [System.Windows.Forms.MessageBox]::Show("Aucune application selectionnee.","Information",
+        [System.Windows.Forms.MessageBox]::Show("Aucune application sélectionnée.","Information",
             [System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
         return
     }
-    $c = [System.Windows.Forms.MessageBox]::Show("Tu vas desinstaller les applications cochees. Continuer ?","Confirmation",
+    $c = [System.Windows.Forms.MessageBox]::Show("Vous allez désinstaller les applications cochées.`n`nCette action peut être destructrice. Continuer ?","Confirmation de suppression",
         [System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Warning)
     if($c -ne [System.Windows.Forms.DialogResult]::Yes){ return }
 
     $btnUninstallSel.Enabled=$false
-    Set-Status "Desinstallation de la selection" $true
-    Write-UILog $logBox "=== DESINSTALLATION de la selection ==="
+    Set-Status "Désinstallation de la sélection..." $true
+    Write-UILog $logBox "=== DÉSINSTALLATION de la sélection ==="
     foreach($a in $sel){ Uninstall-App -App $a -LogBox $logBox }
-    Set-Status "Pret" $false
-    Write-UILog $logBox "Desinstallations terminees."
+    Set-Status "Prêt" $false
+    Write-UILog $logBox "Désinstallations terminées."
     $btnUninstallSel.Enabled=$true
     Refresh-AppState -LogBox $logBox
     Build-Tree -FilterText ($tbSearch.Text)
 })
 
 # Premier affichage
-Refresh-AppState -LogBox $logBox
-Build-Tree
+$form.Add_Shown({
+    $form.Refresh()
+    # Petit délai pour laisser l'UI s'afficher avant de geler pour le premier scan
+    [System.Windows.Forms.Application]::DoEvents()
+    Start-Sleep -Milliseconds 100
+    Refresh-AppState -LogBox $logBox
+    Build-Tree
+})
+
 [System.Windows.Forms.Application]::Run($form)
